@@ -1,9 +1,9 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { fetchAnilistData, GET_TRENDING_MANGAS, AnilistResponse } from '@/lib/anilist'
+import { fetchAnilistData, GET_TRENDING_MANGAS, AnilistResponse, FeaturedManga } from '@/lib/anilist'
 
 export default async function Home() {
-  let featuredManga = []
+  let featuredManga: FeaturedManga[] = []
   try {
     const data = await fetchAnilistData<AnilistResponse>(GET_TRENDING_MANGAS, { page: 1, perPage: 3 })
     featuredManga = data.Page.media.map((manga) => ({

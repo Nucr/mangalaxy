@@ -28,6 +28,14 @@ export interface AnilistResponse {
   Page: PageData;
 }
 
+export interface FeaturedManga {
+  id: number;
+  title: string;
+  description: string;
+  image: string;
+  rating: string;
+}
+
 export async function fetchAnilistData<T = any>(query: string, variables?: object): Promise<T> {
   const ANILIST_API_URL = 'https://graphql.anilist.co'
 
