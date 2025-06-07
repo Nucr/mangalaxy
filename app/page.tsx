@@ -1,31 +1,49 @@
 import Image from 'next/image'
 import Link from 'next/link'
+import { fetchAnilistData, gql } from '@/lib/anilist'
 
-const featuredManga = [
-  {
-    id: 1,
-    title: "Featured Manga 1",
-    description: "An exciting adventure manga with amazing artwork",
-    image: "/placeholder.jpg",
-    rating: 4.8
-  },
-  {
-    id: 2,
-    title: "Featured Manga 2",
-    description: "A thrilling mystery manga that will keep you guessing",
-    image: "/placeholder.jpg",
-    rating: 4.7
-  },
-  {
-    id: 3,
-    title: "Featured Manga 3",
-    description: "A heartwarming slice of life story",
-    image: "/placeholder.jpg",
-    rating: 4.9
+export const GET_TRENDING_MANGAS = gql`
+  query GetTrendingManga($page: Int, $perPage: Int) {
+    Page(page: $page, perPage: $perPage) {
+      media(
+        type: MANGA
+        sort: [TRENDING_DESC]
+        isAdult: false
+      ) {
+        id
+        title {
+          romaji
+          english
+          native
+        }
+        coverImage {
+          extraLarge
+          large
+          medium
+        }
+        description(asHtml: false)
+        averageScore
+      }
+    }
   }
-]
+`
 
-export default function Home() {
+export default async function Home() {
+  let featuredManga = []
+  try {
+    const data = await fetchAnilistData(GET_TRENDING_MANGAS, { page: 1, perPage: 3 })
+    featuredManga = data.Page.media.map((manga: any) => ({
+      id: manga.id,
+      title: manga.title.romaji || manga.title.english || manga.title.native,
+      description: manga.description ? manga.description.replace(/<br>/g, ' ').replace(/<i>/g, '').replace(/<\/i>/g, '') : "No description available.",
+      image: manga.coverImage.large || manga.coverImage.medium || manga.coverImage.extraLarge,
+      rating: manga.averageScore ? (manga.averageScore / 10).toFixed(1) : "N/A" // AniList score is out of 100, convert to 10
+    }))
+  } catch (error) {
+    console.error("Failed to fetch featured mangas for Home page:", error)
+    featuredManga = []
+  }
+
   return (
     <div className="space-y-8">
       {/* Hero Section */}
@@ -54,7 +72,7 @@ export default function Home() {
       <section>
         <h2 className="text-2xl font-bold mb-6">Featured Manga</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {featuredManga.map((manga) => (
+          {featuredManga.length > 0 ? (featuredManga.map((manga: any) => (
             <Link href={`/manga/${manga.id}`} key={manga.id} className="group">
               <div className="bg-gray-800 rounded-lg overflow-hidden">
                 <div className="relative aspect-[2/3]">
@@ -67,7 +85,7 @@ export default function Home() {
                 </div>
                 <div className="p-4">
                   <h3 className="font-semibold text-lg mb-2">{manga.title}</h3>
-                  <p className="text-gray-400 text-sm mb-2">{manga.description}</p>
+                  <p className="text-gray-400 text-sm mb-2 line-clamp-3">{manga.description}</p>
                   <div className="flex items-center">
                     <span className="text-yellow-400">★</span>
                     <span className="ml-1 text-sm">{manga.rating}</span>
@@ -75,7 +93,9 @@ export default function Home() {
                 </div>
               </div>
             </Link>
-          ))}
+          ))) : (
+            <p className="col-span-3 text-center text-gray-400">Loading featured mangas...</p>
+          )}
         </div>
       </section>
     </div>

@@ -1,73 +1,26 @@
 import Link from 'next/link'
 import Image from 'next/image'
+import { fetchAnilistData, GET_RECENT_MANGAS } from '@/lib/anilist'
 
-const latestUpdates = [
-  {
-    id: 1,
-    title: "Manga 1",
-    chapter: "Chapter 156",
-    image: "/placeholder.jpg",
-    date: "2 hours ago"
-  },
-  {
-    id: 2,
-    title: "Manga 2",
-    chapter: "Chapter 89",
-    image: "/placeholder.jpg",
-    date: "3 hours ago"
-  },
-  {
-    id: 3,
-    title: "Manga 3",
-    chapter: "Chapter 234",
-    image: "/placeholder.jpg",
-    date: "4 hours ago"
-  },
-  {
-    id: 4,
-    title: "Manga 4",
-    chapter: "Chapter 45",
-    image: "/placeholder.jpg",
-    date: "5 hours ago"
-  },
-  {
-    id: 5,
-    title: "Manga 5",
-    chapter: "Chapter 67",
-    image: "/placeholder.jpg",
-    date: "6 hours ago"
-  },
-  {
-    id: 6,
-    title: "Manga 6",
-    chapter: "Chapter 123",
-    image: "/placeholder.jpg",
-    date: "7 hours ago"
-  },
-  {
-    id: 7,
-    title: "Manga 7",
-    chapter: "Chapter 78",
-    image: "/placeholder.jpg",
-    date: "8 hours ago"
-  },
-  {
-    id: 8,
-    title: "Manga 8",
-    chapter: "Chapter 90",
-    image: "/placeholder.jpg",
-    date: "9 hours ago"
-  },
-  {
-    id: 9,
-    title: "Manga 9",
-    chapter: "Chapter 34",
-    image: "/placeholder.jpg",
-    date: "10 hours ago"
+export default async function Navbar() {
+  let latestUpdates = []
+  try {
+    const data = await fetchAnilistData(GET_RECENT_MANGAS, { page: 1, perPage: 9 })
+    latestUpdates = data.Page.media.map((manga: any) => ({
+      id: manga.id,
+      title: manga.title.romaji || manga.title.english || manga.title.native,
+      // AniList API does not directly provide "last updated chapter" or "date".
+      // For now, we'll use placeholder values or the total chapter count if available.
+      chapter: manga.chapters ? `Chapter ${manga.chapters}` : "N/A",
+      image: manga.coverImage.large || manga.coverImage.medium || manga.coverImage.extraLarge,
+      date: "Recently Updated" // Placeholder
+    }))
+  } catch (error) {
+    console.error("Failed to fetch latest updates for Navbar:", error)
+    // Fallback to empty array or a default set if API call fails
+    latestUpdates = []
   }
-]
 
-export default function Navbar() {
   return (
     <nav className="bg-gray-900 text-white">
       <div className="container mx-auto px-4">
@@ -86,7 +39,7 @@ export default function Navbar() {
         
         {/* Latest Updates Grid */}
         <div className="grid grid-cols-3 gap-4 py-4">
-          {latestUpdates.map((update) => (
+          {latestUpdates.length > 0 ? (latestUpdates.map((update: any) => (
             <Link href={`/manga/${update.id}`} key={update.id} className="group">
               <div className="relative aspect-[2/3] overflow-hidden rounded-lg">
                 <Image
@@ -102,7 +55,9 @@ export default function Navbar() {
                 </div>
               </div>
             </Link>
-          ))}
+          ))) : (
+            <p className="col-span-3 text-center text-gray-400">Loading latest updates...</p>
+          )}
         </div>
       </div>
     </nav>
