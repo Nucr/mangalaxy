@@ -4,9 +4,39 @@ const ANILIST_API_URL = 'https://graphql.anilist.co'
 
 const client = new GraphQLClient(ANILIST_API_URL)
 
-export async function fetchAnilistData(query: string, variables?: object) {
+interface Title {
+  romaji: string;
+  english: string;
+  native: string;
+}
+
+interface CoverImage {
+  extraLarge: string;
+  large: string;
+  medium: string;
+}
+
+interface Manga {
+  id: number;
+  title: Title;
+  coverImage: CoverImage;
+  chapters?: number;
+  volumes?: number;
+  description?: string;
+  averageScore?: number;
+}
+
+interface PageData {
+  media: Manga[];
+}
+
+export interface AnilistResponse {
+  Page: PageData;
+}
+
+export async function fetchAnilistData<T = any>(query: string, variables?: object): Promise<T> {
   try {
-    return await client.request(query, variables)
+    return await client.request<T>(query, variables)
   } catch (error) {
     console.error("Error fetching AniList data:", error)
     throw error
@@ -65,4 +95,4 @@ export const GET_TRENDING_MANGAS = gql`
       }
     }
   }
-` 
+`

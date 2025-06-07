@@ -1,12 +1,12 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { fetchAnilistData, GET_TRENDING_MANGAS } from '@/lib/anilist'
+import { fetchAnilistData, GET_TRENDING_MANGAS, AnilistResponse } from '@/lib/anilist'
 
 export default async function Home() {
   let featuredManga = []
   try {
-    const data = await fetchAnilistData(GET_TRENDING_MANGAS, { page: 1, perPage: 3 })
-    featuredManga = data.Page.media.map((manga: any) => ({
+    const data = await fetchAnilistData<AnilistResponse>(GET_TRENDING_MANGAS, { page: 1, perPage: 3 })
+    featuredManga = data.Page.media.map((manga) => ({
       id: manga.id,
       title: manga.title.romaji || manga.title.english || manga.title.native,
       description: manga.description ? manga.description.replace(/<br>/g, ' ').replace(/<i>/g, '').replace(/<\/i>/g, '') : "No description available.",
@@ -46,7 +46,7 @@ export default async function Home() {
       <section>
         <h2 className="text-2xl font-bold mb-6">Featured Manga</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {featuredManga.length > 0 ? (featuredManga.map((manga: any) => (
+          {featuredManga.length > 0 ? (featuredManga.map((manga) => (
             <Link href={`/manga/${manga.id}`} key={manga.id} className="group">
               <div className="bg-gray-800 rounded-lg overflow-hidden">
                 <div className="relative aspect-[2/3]">
