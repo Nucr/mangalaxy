@@ -1,30 +1,31 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { fetchAnilistData, GET_RECENT_MANGAS } from '@/lib/anilist'
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  let latestUpdates = []
+  const [latestUpdates, setLatestUpdates] = useState([])
 
-  try {
-    const data = await fetchAnilistData(GET_RECENT_MANGAS, { page: 1, perPage: 9 })
-    latestUpdates = data.Page.media.map((manga: any) => ({
-      id: manga.id,
-      title: manga.title.romaji || manga.title.english || manga.title.native,
-      // AniList API does not directly provide "last updated chapter" or "date".
-      // For now, we'll use placeholder values or the total chapter count if available.
-      chapter: manga.chapters ? `Chapter ${manga.chapters}` : "N/A",
-      image: manga.coverImage.large || manga.coverImage.medium || manga.coverImage.extraLarge,
-      date: "Recently Updated" // Placeholder
-    }))
-  } catch (error) {
-    console.error("Failed to fetch latest updates for Navbar:", error)
-    // Fallback to empty array or a default set if API call fails
-    latestUpdates = []
-  }
+  useEffect(() => {
+    const loadLatestUpdates = async () => {
+      try {
+        const data = await fetchAnilistData(GET_RECENT_MANGAS, { page: 1, perPage: 9 })
+        const updates = data.Page.media.map((manga: any) => ({
+          id: manga.id,
+          title: manga.title.romaji || manga.title.english || manga.title.native,
+          image: manga.coverImage.large || manga.coverImage.medium || manga.coverImage.extraLarge,
+        }))
+        setLatestUpdates(updates)
+      } catch (error) {
+        console.error("Failed to fetch latest updates:", error)
+      }
+    }
+
+    loadLatestUpdates()
+  }, [])
 
   return (
     <nav className="bg-[#1a1b2e]/80 backdrop-blur-md sticky top-0 z-50 border-b border-[#2a2b3e]">
@@ -110,29 +111,38 @@ export default function Navbar() {
             </div>
           </div>
         )}
-      </div>
 
-      {/* Latest Updates Grid */}
-      <div className="grid grid-cols-3 gap-4 py-4">
-        {latestUpdates.length > 0 ? (latestUpdates.map((update: any) => (
-          <Link href={`/manga/${update.id}`} key={update.id} className="group">
-            <div className="relative aspect-[2/3] overflow-hidden rounded-lg">
-              <Image
-                src={update.image}
-                alt={update.title}
-                fill
-                className="object-cover transition-transform group-hover:scale-105"
-              />
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-2">
-                <h3 className="text-sm font-semibold">{update.title}</h3>
-                <p className="text-xs text-gray-300">{update.chapter}</p>
-                <p className="text-xs text-gray-400">{update.date}</p>
+        {/* Latest Updates Grid */}
+        <div className="hidden md:grid grid-cols-9 gap-2 py-4 border-t border-[#2a2b3e]">
+          {latestUpdates.length > 0 ? (
+            latestUpdates.map((manga: any) => (
+              <Link href={`/manga/${manga.id}`} key={manga.id} className="group">
+                <div className="relative aspect-[2/3] rounded-lg overflow-hidden">
+                  <Image
+                    src={manga.image}
+                    alt={manga.title}
+                    fill
+                    className="object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="absolute bottom-0 left-0 right-0 p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <p className="text-white text-sm font-medium truncate">{manga.title}</p>
+                  </div>
+                </div>
+              </Link>
+            ))
+          ) : (
+            <div className="col-span-9">
+              <div className="animate-pulse space-y-4">
+                <div className="grid grid-cols-9 gap-2">
+                  {[...Array(9)].map((_, i) => (
+                    <div key={i} className="aspect-[2/3] bg-[#2a2b3e] rounded-lg"></div>
+                  ))}
+                </div>
               </div>
             </div>
-          </Link>
-        ))) : (
-          <p className="col-span-3 text-center text-gray-400">Loading latest updates...</p>
-        )}
+          )}
+        </div>
       </div>
     </nav>
   )
