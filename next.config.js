@@ -1,10 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['localhost'],
+    domains: ['localhost', 'media.kitsu.io', 's4.anilist.co'],
     unoptimized: true,
   },
   output: 'standalone',
 }
 
-module.exports = nextConfig 
+export default nextConfig 
