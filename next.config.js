@@ -2,26 +2,6 @@ import path from 'path'
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  sassOptions: {
-    includePaths: [path.join(process.cwd(), 'node_modules')],
-  },
-  webpack: (config) => {
-    config.module.rules.push({
-      test: /\.css$|\.scss$/,
-      use: [
-        {
-          loader: 'style-loader',
-        },
-        {
-          loader: 'css-loader',
-        },
-        {
-          loader: 'sass-loader',
-        },
-      ],
-    });
-    return config;
-  },
   images: {
     remotePatterns: [
       {
