@@ -23,15 +23,9 @@ export default async function Home() {
       {/* Hero Section */}
       <section className="relative h-[70vh] w-full overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-[#1a1b2e]/80 via-[#1a1b2e]/50 to-[#0f1019] z-10" />
-        <Image
-          src="/hero-placeholder.jpg"
-          alt="Hero Background"
-          fill
-          className="object-cover"
-          priority
-        />
+        <div className="absolute inset-0 bg-[url('/hero-bg.jpg')] bg-cover bg-center" />
         <div className="container relative z-20 h-full flex items-center">
-          <div className="max-w-2xl">
+          <div className="max-w-2xl animate-fade-in">
             <h1 className="text-5xl font-bold mb-6 gradient-text">
               Discover Your Next Favorite Manga
             </h1>
@@ -43,7 +37,7 @@ export default async function Home() {
               <Link href="/browse" className="btn-primary">
                 Start Reading
               </Link>
-              <Link href="/popular" className="bg-white/10 text-white px-6 py-3 rounded-lg font-semibold hover:bg-white/20 transition-colors duration-200">
+              <Link href="/popular" className="btn-secondary">
                 Popular Titles
               </Link>
             </div>
@@ -63,39 +57,49 @@ export default async function Home() {
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {featuredManga.length > 0 ? (
-              featuredManga.map((manga) => (
-                <Link href={`/manga/${manga.id}`} key={manga.id} className="group">
+              featuredManga.map((manga, index) => (
+                <Link 
+                  href={`/manga/${manga.id}`} 
+                  key={manga.id} 
+                  className="group animate-slide-up"
+                  style={{ animationDelay: `${index * 100}ms` }}
+                >
                   <div className="card h-full">
-                    <div className="relative aspect-[2/3]">
+                    <div className="manga-card">
                       <Image
                         src={manga.image}
                         alt={manga.title}
                         fill
-                        className="object-cover transition-transform duration-300 group-hover:scale-105"
+                        className="manga-card-image"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#1a1b2e] via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    </div>
-                    <div className="p-6">
-                      <h3 className="font-bold text-xl mb-2 line-clamp-1">{manga.title}</h3>
-                      <p className="text-gray-400 text-sm mb-4 line-clamp-2">{manga.description}</p>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center">
-                          <span className="text-[#6c5ce7] mr-1">★</span>
-                          <span className="text-sm font-medium">{manga.rating}</span>
+                      <div className="manga-card-overlay" />
+                      <div className="manga-card-content">
+                        <h3 className="font-bold text-xl mb-2 line-clamp-1">{manga.title}</h3>
+                        <p className="text-gray-400 text-sm mb-4 line-clamp-2">{manga.description}</p>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center">
+                            <span className="text-[#6c5ce7] mr-1">★</span>
+                            <span className="text-sm font-medium">{manga.rating}</span>
+                          </div>
+                          <span className="text-[#6c5ce7] text-sm font-medium group-hover:translate-x-1 transition-transform duration-200">
+                            Read Now →
+                          </span>
                         </div>
-                        <span className="text-[#6c5ce7] text-sm font-medium group-hover:translate-x-1 transition-transform duration-200">
-                          Read Now →
-                        </span>
                       </div>
                     </div>
                   </div>
                 </Link>
               ))
             ) : (
-              <div className="col-span-3 text-center py-12">
-                <div className="animate-pulse space-y-4">
-                  <div className="h-8 bg-[#1a1b2e] rounded w-1/4 mx-auto"></div>
-                  <div className="h-4 bg-[#1a1b2e] rounded w-1/2 mx-auto"></div>
+              <div className="col-span-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {[...Array(3)].map((_, i) => (
+                    <div key={i} className="card h-full">
+                      <div className="manga-card">
+                        <div className="loading-skeleton w-full h-full" />
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
@@ -108,15 +112,43 @@ export default async function Home() {
         <div className="container">
           <h2 className="text-3xl font-bold gradient-text mb-8">Browse by Category</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {['Action', 'Romance', 'Fantasy', 'Horror'].map((category) => (
+            {[
+              { name: 'Action', icon: '⚔️' },
+              { name: 'Romance', icon: '❤️' },
+              { name: 'Fantasy', icon: '✨' },
+              { name: 'Horror', icon: '👻' }
+            ].map((category) => (
               <Link
-                key={category}
-                href={`/category/${category.toLowerCase()}`}
+                key={category.name}
+                href={`/category/${category.name.toLowerCase()}`}
                 className="card p-6 text-center hover:bg-[#6c5ce7]/10 transition-colors duration-200"
               >
-                <h3 className="font-semibold text-lg">{category}</h3>
+                <span className="text-4xl mb-2 block">{category.icon}</span>
+                <h3 className="font-semibold text-lg">{category.name}</h3>
               </Link>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Newsletter Section */}
+      <section className="py-16">
+        <div className="container">
+          <div className="max-w-2xl mx-auto text-center">
+            <h2 className="text-3xl font-bold gradient-text mb-4">Stay Updated</h2>
+            <p className="text-gray-400 mb-8">
+              Subscribe to our newsletter to get the latest updates on new manga releases and exclusive content.
+            </p>
+            <form className="flex gap-4 max-w-md mx-auto">
+              <input
+                type="email"
+                placeholder="Enter your email"
+                className="input-primary flex-1"
+              />
+              <button type="submit" className="btn-primary whitespace-nowrap">
+                Subscribe
+              </button>
+            </form>
           </div>
         </div>
       </section>

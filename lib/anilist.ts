@@ -25,43 +25,46 @@ interface PageData {
 }
 
 export interface AnilistResponse {
-  Page: PageData;
+  Page: {
+    media: Array<{
+      id: number
+      title: {
+        romaji: string
+        english: string
+        native: string
+      }
+      description: string
+      coverImage: {
+        extraLarge: string
+        large: string
+        medium: string
+      }
+      averageScore: number
+      genres: string[]
+      status: string
+      chapters: number
+      volumes: number
+      format: string
+      startDate: {
+        year: number
+        month: number
+        day: number
+      }
+      endDate: {
+        year: number
+        month: number
+        day: number
+      }
+    }>
+  }
 }
 
 export interface FeaturedManga {
-  id: number;
-  title: string;
-  description: string;
-  image: string;
-  rating: string;
-}
-
-export async function fetchAnilistData<T = any>(query: string, variables?: object): Promise<T> {
-  const ANILIST_API_URL = 'https://graphql.anilist.co'
-
-  try {
-    const res = await fetch(ANILIST_API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-      body: JSON.stringify({
-        query: query,
-        variables: variables,
-      }),
-    })
-
-    if (!res.ok) {
-      const errorBody = await res.text()
-      throw new Error(`Failed to fetch from AniList: ${res.status} - ${errorBody}`)
-    }
-
-    return res.json()
-  } catch (error) {
-    console.error("Error fetching AniList data:", error)
-    throw error
-  }
+  id: number
+  title: string
+  description: string
+  image: string
+  rating: string
 }
 
 export const GET_RECENT_MANGAS = `
@@ -91,27 +94,69 @@ export const GET_RECENT_MANGAS = `
 `
 
 export const GET_TRENDING_MANGAS = `
-  query GetTrendingManga($page: Int, $perPage: Int) {
+  query ($page: Int, $perPage: Int) {
     Page(page: $page, perPage: $perPage) {
-      media(
-        type: MANGA
-        sort: [TRENDING_DESC]
-        isAdult: false
-      ) {
+      media(type: MANGA, sort: TRENDING_DESC) {
         id
         title {
           romaji
           english
           native
         }
+        description
         coverImage {
           extraLarge
           large
           medium
         }
-        description(asHtml: false)
         averageScore
+        genres
+        status
+        chapters
+        volumes
+        format
+        startDate {
+          year
+          month
+          day
+        }
+        endDate {
+          year
+          month
+          day
+        }
       }
     }
   }
 `
+
+export async function fetchAnilistData<T>(query: string, variables: Record<string, any> = {}): Promise<T> {
+  try {
+    const response = await fetch('https://graphql.anilist.co', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify({
+        query,
+        variables,
+      }),
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
+    const data = await response.json()
+
+    if (data.errors) {
+      throw new Error(data.errors[0].message)
+    }
+
+    return data.data as T
+  } catch (error) {
+    console.error('Error fetching data from AniList:', error)
+    throw error
+  }
+}
