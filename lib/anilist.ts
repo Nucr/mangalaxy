@@ -1,9 +1,3 @@
-import { GraphQLClient, gql } from 'graphql-request'
-
-const ANILIST_API_URL = 'https://graphql.anilist.co'
-
-const client = new GraphQLClient(ANILIST_API_URL)
-
 interface Title {
   romaji: string;
   english: string;
@@ -35,17 +29,34 @@ export interface AnilistResponse {
 }
 
 export async function fetchAnilistData<T = any>(query: string, variables?: object): Promise<T> {
+  const ANILIST_API_URL = 'https://graphql.anilist.co'
+
   try {
-    return await client.request<T>(query, variables)
+    const res = await fetch(ANILIST_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify({
+        query: query,
+        variables: variables,
+      }),
+    })
+
+    if (!res.ok) {
+      const errorBody = await res.text()
+      throw new Error(`Failed to fetch from AniList: ${res.status} - ${errorBody}`)
+    }
+
+    return res.json()
   } catch (error) {
     console.error("Error fetching AniList data:", error)
     throw error
   }
 }
 
-export { gql }
-
-export const GET_RECENT_MANGAS = gql`
+export const GET_RECENT_MANGAS = `
   query GetRecentManga($page: Int, $perPage: Int) {
     Page(page: $page, perPage: $perPage) {
       media(
@@ -71,7 +82,7 @@ export const GET_RECENT_MANGAS = gql`
   }
 `
 
-export const GET_TRENDING_MANGAS = gql`
+export const GET_TRENDING_MANGAS = `
   query GetTrendingManga($page: Int, $perPage: Int) {
     Page(page: $page, perPage: $perPage) {
       media(

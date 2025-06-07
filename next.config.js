@@ -5,7 +5,6 @@ const nextConfig = {
     unoptimized: true,
   },
   output: 'standalone',
-  transpilePackages: ['graphql', 'graphql-request'],
 }
 
 export default nextConfig 
