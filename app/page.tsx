@@ -1,32 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { fetchAnilistData, gql } from '@/lib/anilist'
-
-export const GET_TRENDING_MANGAS = gql`
-  query GetTrendingManga($page: Int, $perPage: Int) {
-    Page(page: $page, perPage: $perPage) {
-      media(
-        type: MANGA
-        sort: [TRENDING_DESC]
-        isAdult: false
-      ) {
-        id
-        title {
-          romaji
-          english
-          native
-        }
-        coverImage {
-          extraLarge
-          large
-          medium
-        }
-        description(asHtml: false)
-        averageScore
-      }
-    }
-  }
-`
+import { fetchAnilistData, GET_TRENDING_MANGAS } from '@/lib/anilist'
 
 export default async function Home() {
   let featuredManga = []

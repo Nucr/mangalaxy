@@ -39,4 +39,30 @@ export const GET_RECENT_MANGAS = gql`
       }
     }
   }
+`
+
+export const GET_TRENDING_MANGAS = gql`
+  query GetTrendingManga($page: Int, $perPage: Int) {
+    Page(page: $page, perPage: $perPage) {
+      media(
+        type: MANGA
+        sort: [TRENDING_DESC]
+        isAdult: false
+      ) {
+        id
+        title {
+          romaji
+          english
+          native
+        }
+        coverImage {
+          extraLarge
+          large
+          medium
+        }
+        description(asHtml: false)
+        averageScore
+      }
+    }
+  }
 ` 
