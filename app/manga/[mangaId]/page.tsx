@@ -3,19 +3,14 @@ import Image from 'next/image';
 import Link from 'next/link';
 import CommentSection from '@/components/CommentSection';
 import { slugify } from '@/lib/utils';
+import { fetchAnilistData, GET_RECENT_MANGAS, AnilistResponse } from '@/lib/anilist';
 
 export async function generateStaticParams() {
-  // Gerçek bir uygulamada, burada API'den veya veritabanından dinamik manga ID'lerini alırsınız.
-  // Şimdilik, statik olarak oluşturulacak birkaç örnek ID sağlıyoruz.
-  const dummyMangaTitles = [
-    "Fitness'çı Kahraman",
-    "Kılıç Ustası",
-    "Sonsuz Büyücü",
-    "Karanlık Lordun Yükselişi"
-  ];
+  const data = await fetchAnilistData<AnilistResponse>(GET_RECENT_MANGAS, { page: 1, perPage: 20 });
+  const mangas = data.Page.media;
 
-  return dummyMangaTitles.map(title => ({
-    mangaId: slugify(title)
+  return mangas.map(manga => ({
+    mangaId: slugify(manga.title.romaji || manga.title.english || manga.title.native || '')
   }));
 }
 
