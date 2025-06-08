@@ -8,7 +8,7 @@ export async function generateStaticParams(): Promise<{ mangaId: string; bolumNu
 
   const params: { mangaId: string; bolumNumarasi: string }[] = [];
 
-  for (const manga of mangas) {2
+  for (const manga of mangas) {
     const mangaId = slugify(manga.title.romaji || manga.title.english || manga.title.native || '');
     const chapterCount = manga.chapters || 1;
     for (let i = 1; i <= Math.min(chapterCount, 5); i++) {
@@ -42,4 +42,4 @@ export default async function ChapterDetailPage({
       </div>
     </div>
   );
-}
+} 

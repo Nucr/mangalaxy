@@ -43,10 +43,6 @@ interface Manga {
   };
 }
 
-interface PageData {
-  media: Manga[];
-}
-
 export interface AnilistResponse {
   Page: {
     media: Array<{
@@ -210,7 +206,7 @@ export const GET_MANGA_DETAILS_BY_TITLE = `
   }
 `
 
-export async function fetchAnilistData<T>(query: string, variables: Record<string, any> = {}): Promise<T> {
+export async function fetchAnilistData<T>(query: string, variables: Record<string, unknown> = {}): Promise<T> {
   try {
     const response = await fetch('https://graphql.anilist.co', {
       method: 'POST',
@@ -239,4 +235,4 @@ export async function fetchAnilistData<T>(query: string, variables: Record<strin
     console.error('Error fetching data from AniList:', error)
     throw error
   }
-}
+} 
