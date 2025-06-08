@@ -50,8 +50,8 @@ export default async function TrendingMangaSection() {
                     className="object-cover rounded"
                   />
                 </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-lg mb-1 truncate group-hover:text-[#6c5ce7] transition-colors duration-200">
+                <div className="flex-1 min-w-0 pr-2">
+                  <h3 className="font-bold text-lg mb-1 w-full truncate overflow-hidden group-hover:text-[#6c5ce7] transition-colors duration-200">
                     {manga.title}
                   </h3>
                   <p className="text-sm text-gray-400">Webtoon</p>
