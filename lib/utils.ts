@@ -1,0 +1,1 @@
+export function slugify(text: string) {\n  return text\n    .toString()\n    .normalize(\'NFD\')\n    .replace(/\p{Diacritic}/gu, \'\')\n    .toLowerCase()\n    .trim()\n    .replace(/\s+/g, \'-\')\n    .replace(/[^\w-]+/g, \'\')\n    .replace(/--+/g, \'-\');\n} 

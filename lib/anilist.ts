@@ -60,7 +60,7 @@ export interface AnilistResponse {
 }
 
 export interface FeaturedManga {
-  id: number
+  id: string
   title: string
   description: string
   image: string
