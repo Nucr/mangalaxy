@@ -3,7 +3,6 @@ import Link from 'next/link'
 import LatestUpdatesSection from '@/components/LatestUpdatesSection'
 import TrendingMangaSection from '@/components/TrendingMangaSection'
 import AnnouncementBoard from '@/components/AnnouncementBoard'
-import PopularMangaSection from '@/components/PopularMangaSection'
 
 export default async function Home() {
   return (
@@ -49,9 +48,6 @@ export default async function Home() {
           </div>
         </div>
       </section>
-
-      {/* Son Zamanlarda Popüler Bölümü */}
-      <PopularMangaSection />
 
       {/* Categories Section */}
       <section className="py-16 bg-[#1a1b2e]/50">
