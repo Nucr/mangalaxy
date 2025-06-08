@@ -1,6 +1,8 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import LatestUpdatesSection from '@/components/LatestUpdatesSection'
+import TrendingMangaSection from '@/components/TrendingMangaSection'
+import AnnouncementBoard from '@/components/AnnouncementBoard'
 
 export default async function Home() {
   return (
@@ -32,6 +34,12 @@ export default async function Home() {
 
       {/* En Son Güncellemeler Bölümü */}
       <LatestUpdatesSection />
+
+      {/* Trend Olanlar Bölümü */}
+      <TrendingMangaSection />
+
+      {/* Duyuru Panosu Bölümü */}
+      <AnnouncementBoard />
 
       {/* Categories Section */}
       <section className="py-16 bg-[#1a1b2e]/50">
