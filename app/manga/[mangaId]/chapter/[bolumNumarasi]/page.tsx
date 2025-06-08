@@ -1,25 +1,22 @@
 import React from 'react';
 import { slugify } from '@/lib/utils';
+import { fetchAnilistData, GET_RECENT_MANGAS, AnilistResponse } from '@/lib/anilist';
 
 interface ChapterDetailPageProps {
-  params: Promise<{ mangaId: string; bolumNumarasi: string }>;
+  params: { mangaId: string; bolumNumarasi: string };
 }
 
 export async function generateStaticParams() {
-  // Gerçek bir uygulamada, API'den veya veritabanından dinamik manga ve bölüm ID'lerini alırsınız.
-  // Şimdilik, statik olarak oluşturulacak birkaç örnek ID sağlıyoruz.
-  const dummyMangaTitles = [
-    "Fitness'çı Kahraman",
-    "Kılıç Ustası",
-    "Sonsuz Büyücü",
-    "Karanlık Lordun Yükselişi"
-  ];
+  const data = await fetchAnilistData<AnilistResponse>(GET_RECENT_MANGAS, { page: 1, perPage: 20 });
+  const mangas = data.Page.media;
 
-  const params = [];
-  for (const title of dummyMangaTitles) {
-    const mangaId = slugify(title);
-    // Her manga için birkaç örnek bölüm
-    for (let i = 1; i <= 3; i++) {
+  const params: { mangaId: string; bolumNumarasi: string }[] = [];
+
+  for (const manga of mangas) {
+    const mangaId = slugify(manga.title.romaji || manga.title.english || manga.title.native || '');
+    // Her manga için mevcut chapter sayısına göre dummy bölüm numaraları oluştur
+    const chapterCount = manga.chapters || 1; // Eğer chapters yoksa en az 1 bölüm olarak kabul et
+    for (let i = 1; i <= Math.min(chapterCount, 5); i++) { // İlk 5 bölümü veya mevcut bölüm sayısını al
       params.push({ mangaId: mangaId, bolumNumarasi: `${i}` });
     }
   }
@@ -27,7 +24,7 @@ export async function generateStaticParams() {
 }
 
 export default async function ChapterDetailPage(props: ChapterDetailPageProps) {
-  const { mangaId, bolumNumarasi } = await props.params;
+  const { mangaId, bolumNumarasi } = props.params;
 
   return (
     <div className="container mx-auto px-4 py-8">
