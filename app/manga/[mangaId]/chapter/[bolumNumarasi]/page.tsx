@@ -1,7 +1,7 @@
 import React from 'react';
 
 interface ChapterDetailPageProps {
-  params: { mangaId: string; bolumNumarasi: string };
+  params: Promise<{ mangaId: string; bolumNumarasi: string }>;
 }
 
 export async function generateStaticParams() {
@@ -14,8 +14,8 @@ export async function generateStaticParams() {
   ];
 }
 
-export default async function ChapterDetailPage({ params }: ChapterDetailPageProps) {
-  const { mangaId, bolumNumarasi } = params;
+export default async function ChapterDetailPage(props: ChapterDetailPageProps) {
+  const { mangaId, bolumNumarasi } = await props.params;
 
   return (
     <div className="container mx-auto px-4 py-8">
