@@ -3,57 +3,40 @@ import Image from 'next/image';
 import Link from 'next/link';
 import CommentSection from '@/components/CommentSection';
 import { slugify } from '@/lib/utils';
-import { fetchAnilistData, GET_RECENT_MANGAS, AnilistResponse } from '@/lib/anilist';
+import { fetchAnilistData, GET_RECENT_MANGAS, GET_MANGA_DETAILS_BY_TITLE, AnilistResponse } from '@/lib/anilist';
+import { notFound } from 'next/navigation';
 
 export async function generateStaticParams() {
   const data = await fetchAnilistData<AnilistResponse>(GET_RECENT_MANGAS, { page: 1, perPage: 20 });
   const mangas = data.Page.media;
 
-  return mangas.map(manga => ({
+  const params = mangas.map(manga => ({
     mangaId: slugify(manga.title.romaji || manga.title.english || manga.title.native || '')
   }));
+
+  console.log("Generated manga detail params:", params);
+  return params;
 }
 
-export default async function MangaDetailPage({ params }: { params: Promise<{ mangaId: string }> }) {
-  const { mangaId } = await params;
+export default async function MangaDetailPage({ params }: { params: { mangaId: string } }) {
+  const { mangaId } = params;
 
-  // Dummy data for demonstration. In a real application, you would fetch this from an API.
-  const manga = {
-    id: mangaId,
-    title: mangaId.replace(/-/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase()), // Slugified ID'yi başlığa dönüştürüyoruz
-    image: "/hero-bg.jpg", // Placeholder image, replace with actual manga image
-    genres: ["Aksiyon", "Fantezi", "Komedi", "Macera"],
-    description: `Yıl 20XX. Bir B-filminden fırlamış canavarların istilasıyla insanlık, gözlerini yeni
-güçlere açıyor!
+  // Slug'ı okunabilir bir başlığa dönüştür (AniList arama için)
+  const searchableTitle = mangaId.replace(/-/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase());
 
-Egzersiz yapmak zorunda kalmadan güç ve kuvvet saçan kahramanlar arasında,
-Stronger Gym'i koruyan bir "kaplan" var.
+  const data = await fetchAnilistData<AnilistResponse>(GET_MANGA_DETAILS_BY_TITLE, { title: searchableTitle });
+  const manga = data.Page.media[0];
 
-Gerçek bir kaplan değil. Kaplan desenli tişört ve don giyen bir adam!
+  if (!manga) {
+    notFound();
+  }
 
-Gym bebeklerini her zamanki gibi sevinçle karşılıyor!
-
-"Ah, gym bebeği mi? Korkma, gel içerii!"
-
-Buyurun, ana karakterimiz ve Stronger Gym yoldaşlarının sağlıklı birer zihin ve
-beden elde edişlerini beraber izleyelim!`,
-    rating: "0.0/5 (0 oy)",
-    chapters: [
-      { number: 11, date: "06.06.2025" },
-      { number: 10, date: "03.06.2025" },
-      { number: 8, date: "03.06.2025" },
-      { number: 7, date: "03.06.2025" },
-      { number: 6, date: "02.06.2025" },
-      { number: 5, date: "01.06.2025" },
-    ],
-    updateSchedule: "Bilinmiyor",
-    writer: "Bilinmiyor",
-    type: "WEBTOON",
-    status: "Devam Ediyor",
-    chapterCount: 11,
-    lastUpdated: "2025-06-08",
-    createdDate: "2025-05-31",
-  };
+  // API'den gelen verileri kullanarak bileşeni doldur
+  const displayTitle = manga.title.english || manga.title.romaji || manga.title.native;
+  const description = manga.description ? manga.description.replace(/<br>/g, '\n') : 'Açıklama mevcut değil.';
+  const rating = manga.averageScore ? `${manga.averageScore}/100` : 'N/A';
+  const lastUpdatedDate = new Date(manga.endDate?.year, (manga.endDate?.month || 1) - 1, manga.endDate?.day);
+  const createdDate = new Date(manga.startDate?.year, (manga.startDate?.month || 1) - 1, manga.startDate?.day);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -63,14 +46,14 @@ beden elde edişlerini beraber izleyelim!`,
           <div className="card p-4">
             <div className="relative w-full aspect-[2/3] mb-4">
               <Image
-                src={manga.image}
-                alt={manga.title}
+                src={manga.coverImage.extraLarge || manga.coverImage.large || manga.coverImage.medium}
+                alt={displayTitle}
                 fill
                 className="object-cover rounded-lg"
               />
             </div>
             <h3 className="text-xl font-bold text-white mb-2">Değerlendirme</h3>
-            <p className="text-gray-400">{manga.rating}</p>
+            <p className="text-gray-400">{rating}</p>
           </div>
 
           {/* Buttons */}
@@ -84,14 +67,14 @@ beden elde edişlerini beraber izleyelim!`,
         {/* Middle Column: Description and Details */}
         <div className="lg:col-span-2">
           <div className="card p-6">
-            <h1 className="text-4xl font-bold gradient-text mb-4">{manga.title}</h1>
+            <h1 className="text-4xl font-bold gradient-text mb-4">{displayTitle}</h1>
             <div className="flex flex-wrap gap-2 mb-6">
-              {manga.genres.map((genre, index) => (
+              {(manga.genres || []).map((genre, index) => (
                 <span key={index} className="badge badge-primary">{genre}</span>
               ))}
             </div>
             <h2 className="text-2xl font-bold text-white mb-3">Şuna bir bakın!!!</h2>
-            <p className="text-gray-400 leading-relaxed whitespace-pre-line">{manga.description}</p>
+            <p className="text-gray-400 leading-relaxed whitespace-pre-line" dangerouslySetInnerHTML={{ __html: description }}></p>
           </div>
 
           {/* Chapters Section */}
@@ -127,38 +110,19 @@ beden elde edişlerini beraber izleyelim!`,
                   <span className="day-circle">P</span>
                 </div>
                 <div className="text-gray-400">
-                  <p>Yazar: {manga.writer}</p>
-                  <p>Tür: {manga.type}</p>
-                  <p>Durum: {manga.status}</p>
-                  <p>Bölüm Sayısı: {manga.chapterCount}</p>
-                  <p>Güncellenme Tarihi: {manga.lastUpdated}</p>
-                  <p>Oluşturulma Tarihi: {manga.createdDate}</p>
+                  <p>Yazar: {manga.staff?.edges?.find(edge => edge.role === 'Story & Art')?.node?.name?.full || 'Bilinmiyor'}</p>
+                  <p>Tür: {manga.format || 'Bilinmiyor'}</p>
+                  <p>Durum: {manga.status || 'Bilinmiyor'}</p>
+                  <p>Bölüm Sayısı: {manga.chapters || 'Bilinmiyor'}</p>
+                  <p>Güncellenme Tarihi: {lastUpdatedDate.toLocaleDateString('tr-TR')}</p>
+                  <p>Oluşturulma Tarihi: {createdDate.toLocaleDateString('tr-TR')}</p>
                 </div>
               </div>
 
               {/* Chapter List (Right Column) */}
               <div className="lg:col-span-3 space-y-4">
-                {manga.chapters.map((chapter) => (
-                  <Link
-                    key={chapter.number}
-                    href={`/manga/${manga.id}/chapter/${chapter.number}`}
-                    className="flex items-center bg-[#0f1019] p-4 rounded-lg hover:bg-[#1a1b2e] transition-colors duration-200"
-                  >
-                    <div className="relative w-16 h-16 flex-shrink-0 mr-4">
-                      <Image
-                        src={manga.image} // Use manga image as chapter thumbnail for now
-                        alt={`Bölüm ${chapter.number}`}
-                        fill
-                        className="object-cover rounded"
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-bold text-lg text-white">{chapter.number}. Bölüm</h3>
-                      <p className="text-sm text-gray-400">{chapter.date}</p>
-                    </div>
-                    {/* Add a play icon or similar if desired */}
-                  </Link>
-                ))}
+                {/* Burası için gerçek bölüm verilerine ihtiyacımız var, şimdilik boş bırakıyorum */}
+                <p className="text-gray-400">Bölüm verileri mevcut değil.</p>
               </div>
             </div>
 
