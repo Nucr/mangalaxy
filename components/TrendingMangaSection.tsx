@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
+import { slugify } from '@/lib/utils'
 import { fetchAnilistData, GET_TRENDING_MANGAS, AnilistResponse, FeaturedManga } from '@/lib/anilist'
 
 interface TrendingManga extends FeaturedManga {
@@ -11,7 +12,7 @@ export default async function TrendingMangaSection() {
   try {
     const data = await fetchAnilistData<AnilistResponse>(GET_TRENDING_MANGAS, { page: 1, perPage: 6 })
     trendingMangas = data.Page.media.map((manga) => ({
-      id: manga.id,
+      id: slugify(manga.title.romaji || manga.title.english || manga.title.native),
       title: manga.title.romaji || manga.title.english || manga.title.native,
       description: manga.description ? manga.description.replace(/<br>/g, ' ').replace(/<i>/g, '').replace(/<\/i>/g, '') : "No description available.",
       image: manga.coverImage.large || manga.coverImage.medium || manga.coverImage.extraLarge,
