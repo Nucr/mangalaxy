@@ -33,14 +33,22 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* En Son Güncellemeler Bölümü */}
-      <LatestUpdatesSection />
-
-      {/* Trend Olanlar Bölümü */}
-      <TrendingMangaSection />
-
-      {/* Duyuru Panosu Bölümü */}
+      {/* Duyuru Panosu Bölümü - En üste taşıdık */}
       <AnnouncementBoard />
+
+      {/* En Son Güncellemeler ve Trend Olanlar Bölümü - Yan yana */}
+      <section className="py-16 bg-[#0f1019]">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2">
+              <LatestUpdatesSection />
+            </div>
+            <div>
+              <TrendingMangaSection />
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Son Zamanlarda Popüler Bölümü */}
       <PopularMangaSection />
