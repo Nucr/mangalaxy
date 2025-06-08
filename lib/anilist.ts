@@ -10,39 +10,6 @@ interface CoverImage {
   medium: string;
 }
 
-interface Manga {
-  id: number;
-  title: Title;
-  coverImage: CoverImage;
-  chapters?: number;
-  volumes?: number;
-  description?: string;
-  averageScore?: number;
-  genres?: string[];
-  status?: string;
-  format?: string;
-  startDate?: {
-    year: number;
-    month: number;
-    day: number;
-  };
-  endDate?: {
-    year: number;
-    month: number;
-    day: number;
-  };
-  staff?: {
-    edges: Array<{
-      role: string;
-      node: {
-        name: {
-          full: string;
-        };
-      };
-    }>;
-  };
-}
-
 export interface AnilistResponse {
   Page: {
     media: Array<{

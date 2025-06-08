@@ -37,7 +37,7 @@ export default async function LatestUpdatesSection() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {latestUpdates.length > 0 ? (
-            latestUpdates.map((manga, _) => (
+            latestUpdates.map((manga) => (
               <Link
                 key={manga.id}
                 href={`/manga/${manga.id}`}
