@@ -2,15 +2,21 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import CommentSection from '@/components/CommentSection';
+import { slugify } from '@/lib/utils';
 
 export async function generateStaticParams() {
   // Gerçek bir uygulamada, burada API'den veya veritabanından dinamik manga ID'lerini alırsınız.
   // Şimdilik, statik olarak oluşturulacak birkaç örnek ID sağlıyoruz.
-  return [
-    { mangaId: '1' },
-    { mangaId: '2' },
-    { mangaId: '3' },
+  const dummyMangaTitles = [
+    "Fitness'çı Kahraman",
+    "Kılıç Ustası",
+    "Sonsuz Büyücü",
+    "Karanlık Lordun Yükselişi"
   ];
+
+  return dummyMangaTitles.map(title => ({
+    mangaId: slugify(title)
+  }));
 }
 
 export default async function MangaDetailPage({ params }: { params: Promise<{ mangaId: string }> }) {
@@ -19,7 +25,7 @@ export default async function MangaDetailPage({ params }: { params: Promise<{ ma
   // Dummy data for demonstration. In a real application, you would fetch this from an API.
   const manga = {
     id: mangaId,
-    title: "Fitness'çı Kahraman",
+    title: mangaId.replace(/-/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase()), // Slugified ID'yi başlığa dönüştürüyoruz
     image: "/hero-bg.jpg", // Placeholder image, replace with actual manga image
     genres: ["Aksiyon", "Fantezi", "Komedi", "Macera"],
     description: `Yıl 20XX. Bir B-filminden fırlamış canavarların istilasıyla insanlık, gözlerini yeni
