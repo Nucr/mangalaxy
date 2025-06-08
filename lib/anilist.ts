@@ -1,15 +1,3 @@
-interface Title {
-  romaji: string;
-  english: string;
-  native: string;
-}
-
-interface CoverImage {
-  extraLarge: string;
-  large: string;
-  medium: string;
-}
-
 export interface AnilistResponse {
   Page: {
     media: Array<{
