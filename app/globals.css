@@ -60,7 +60,7 @@
   }
 
   .manga-card {
-    @apply relative aspect-[2/3] rounded-lg overflow-hidden group;
+    @apply relative aspect-[2/3] rounded-lg overflow-hidden;
   }
 
   .manga-card-image {
