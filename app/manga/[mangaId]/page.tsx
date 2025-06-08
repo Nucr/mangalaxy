@@ -3,12 +3,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import CommentSection from '@/components/CommentSection';
 
-interface MangaDetailPageProps {
-  params: { mangaId: string };
-}
-
-export default async function MangaDetailPage({ params }: MangaDetailPageProps) {
-  const { mangaId } = params;
+export default async function MangaDetailPage({ params }: { params: Promise<{ mangaId: string }> }) {
+  const { mangaId } = await params;
 
   // Dummy data for demonstration. In a real application, you would fetch this from an API.
   const manga = {
