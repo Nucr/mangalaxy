@@ -1,5 +1,5 @@
 import React from 'react';
-import Link from 'next/link';
+import Image from 'next/image';
 
 export default function AnnouncementBoard() {
   return (
@@ -8,7 +8,7 @@ export default function AnnouncementBoard() {
       <div className="space-y-4">
         <div className="flex items-start space-x-4">
           <div className="flex-shrink-0">
-            <img
+            <Image
               src="/images/announcement-icon.png"
               alt="Duyuru"
               width={40}
@@ -23,7 +23,7 @@ export default function AnnouncementBoard() {
         </div>
         <div className="flex items-start space-x-4">
           <div className="flex-shrink-0">
-            <img
+            <Image
               src="/images/announcement-icon.png"
               alt="Duyuru"
               width={40}
