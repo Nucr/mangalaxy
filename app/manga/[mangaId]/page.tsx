@@ -1,6 +1,7 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import CommentSection from '@/components/CommentSection';
 
 interface MangaDetailPageProps {
   params: { mangaId: string };
@@ -163,6 +164,9 @@ beden elde edişlerini beraber izleyelim!`,
               <button className="btn-pagination">Sonraki &gt;</button>
             </div>
           </div>
+
+          {/* Comment Section */}
+          <CommentSection />
         </div>
       </div>
     </div>
