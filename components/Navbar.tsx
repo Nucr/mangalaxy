@@ -30,17 +30,17 @@ export default function Navbar() {
 
           {/* Navigation Links */}
           <div className="hidden md:flex items-center space-x-8">
-            <Link href="/browse" className="nav-link">
-              Browse
+            <Link href="/" className="nav-link">
+              Ana Sayfa
+            </Link>
+            <Link href="/series" className="nav-link">
+              Seriler
             </Link>
             <Link href="/popular" className="nav-link">
-              Popular
+              Popüler
             </Link>
             <Link href="/latest" className="nav-link">
-              Latest
-            </Link>
-            <Link href="/categories" className="nav-link">
-              Categories
+              En Son
             </Link>
           </div>
 
@@ -49,7 +49,7 @@ export default function Navbar() {
             <div className="relative hidden md:block">
               <input
                 type="text"
-                placeholder="Search manga..."
+                placeholder="Manga ara..."
                 className="input-primary w-64"
               />
               <button className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors duration-200">
@@ -57,7 +57,7 @@ export default function Navbar() {
               </button>
             </div>
             <Link href="/login" className="btn-secondary">
-              Login
+              Giriş Yap
             </Link>
           </div>
         </div>
