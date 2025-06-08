@@ -56,7 +56,9 @@ export default async function LatestUpdatesSection() {
                   </h3>
                   <div className="text-sm text-gray-400">
                     {manga.latestChapters.map((chapter, i) => (
-                      <p key={i}>Bölüm: {chapter}</p>
+                      <Link key={i} href={`/manga/${manga.id}/chapter/${chapter}`} className="block hover:text-[#6c5ce7] transition-colors duration-200">
+                        Bölüm: {chapter}
+                      </Link>
                     ))}
                   </div>
                   <div className="flex items-center mt-3">
