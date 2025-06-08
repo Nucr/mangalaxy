@@ -1,6 +1,7 @@
 import React from 'react';
 import { slugify } from '@/lib/utils';
 import { AnilistResponse, fetchAnilistData, GET_RECENT_MANGAS } from '@/lib/anilist';
+import { redirect } from 'next/navigation';
 
 export async function generateStaticParams(): Promise<{ mangaId: string }[]> {
   const data = await fetchAnilistData<AnilistResponse>(GET_RECENT_MANGAS, { page: 1, perPage: 20 });
@@ -19,6 +20,11 @@ type PageProps = {
 
 export default async function MangaDetailPage({ params }: PageProps) {
   const { mangaId } = await params;
+
+  if (mangaId.endsWith('.txt')) {
+    const cleanMangaId = mangaId.slice(0, -4);
+    redirect(`/manga/${cleanMangaId}`);
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
