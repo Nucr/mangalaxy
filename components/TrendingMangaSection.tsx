@@ -50,7 +50,7 @@ export default async function TrendingMangaSection() {
                     className="object-cover rounded"
                   />
                 </div>
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
                   <h3 className="font-bold text-lg mb-1 truncate group-hover:text-[#6c5ce7] transition-colors duration-200">
                     {manga.title}
                   </h3>
