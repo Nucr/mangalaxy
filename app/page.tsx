@@ -17,8 +17,7 @@ export default async function Home() {
               Bir Sonraki Favori Manganızı Keşfedin
             </h1>
             <p className="text-xl text-gray-300 mb-8">
-              Popüler serilerden gizli mücevherlere kadar binlerce manga başlığını keşfedin.
-              Okuma yolculuğunuza bugün başlayın.
+              Popüler serilerden gizli mücevherlere kadar binlerce manga başlığını keşfedin. Okuma yolculuğunuza bugün başlayın.
             </p>
             <div className="flex gap-4">
               <Link href="/browse" className="btn-primary">
@@ -32,10 +31,10 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Duyuru Panosu Bölümü - En üste taşıdık */}
+      {/* Duyuru Panosu Bölümü */}
       <AnnouncementBoard />
 
-      {/* En Son Güncellemeler ve Trend Olanlar Bölümü - Yan yana */}
+      {/* En Son Güncellemeler ve Trend Olanlar Bölümü */}
       <section className="py-16 bg-[#0f1019]">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -62,7 +61,13 @@ export default async function Home() {
             ].map((category) => (
               <Link
                 key={category.name}
-                href={`/category/${category.name.toLowerCase().replace(/ğ/g, 'g').replace(/ı/g, 'i').replace(/ç/g, 'c').replace(/ş/g, 's').replace(/ö/g, 'o').replace(/ü/g, 'u')}`}
+                href={`/category/${category.name.toLowerCase()
+                  .replace(/ğ/g, 'g')
+                  .replace(/ı/g, 'i')
+                  .replace(/ç/g, 'c')
+                  .replace(/ş/g, 's')
+                  .replace(/ö/g, 'o')
+                  .replace(/ü/g, 'u')}`}
                 className="card p-6 text-center hover:bg-[#6c5ce7]/10 transition-colors duration-200"
               >
                 <span className="text-4xl mb-2 block">{category.icon}</span>
@@ -96,4 +101,4 @@ export default async function Home() {
       </section>
     </main>
   )
-} 
+}
