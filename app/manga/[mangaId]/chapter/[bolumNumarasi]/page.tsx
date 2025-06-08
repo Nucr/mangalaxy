@@ -18,15 +18,15 @@ export async function generateStaticParams(): Promise<{ mangaId: string; bolumNu
   return params;
 }
 
-interface PageProps {
-  params: {
+type PageProps = {
+  params: Promise<{
     mangaId: string;
     bolumNumarasi: string;
-  };
-}
+  }>;
+};
 
 export default async function ChapterDetailPage({ params }: PageProps) {
-  const { mangaId, bolumNumarasi } = params;
+  const { mangaId, bolumNumarasi } = await params;
 
   return (
     <div className="container mx-auto px-4 py-8">
