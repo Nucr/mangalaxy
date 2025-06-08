@@ -2,8 +2,9 @@ import React from 'react';
 import { slugify } from '@/lib/utils';
 import { fetchAnilistData, GET_RECENT_MANGAS, AnilistResponse } from '@/lib/anilist';
 
-interface ChapterDetailPageProps {
-  params: { mangaId: string; bolumNumarasi: string };
+interface PageProps {
+  params: Promise<{ mangaId: string; bolumNumarasi: string }>;
+  searchParams: { [key: string]: string | string[] | undefined };
 }
 
 export async function generateStaticParams() {
@@ -23,8 +24,8 @@ export async function generateStaticParams() {
   return params;
 }
 
-export default async function ChapterDetailPage({ params }: { params: { mangaId: string; bolumNumarasi: string } }) {
-  const { mangaId, bolumNumarasi } = params;
+export default async function ChapterDetailPage(props: PageProps) {
+  const { mangaId, bolumNumarasi } = await props.params;
 
   return (
     <div className="container mx-auto px-4 py-8">
