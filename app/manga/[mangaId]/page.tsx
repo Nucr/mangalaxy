@@ -1,15 +1,12 @@
 import React from 'react';
 import Image from 'next/image';
 import { slugify } from '@/lib/utils';
-import { AnilistResponse, fetchAnilistData, GET_MANGA_DETAILS_BY_TITLE } from '@/lib/anilist';
+import { STATIC_MANGAS } from '@/lib/anilist';
 import { redirect } from 'next/navigation';
 
 export async function generateStaticParams(): Promise<{ mangaId: string }[]> {
-  const data = await fetchAnilistData<AnilistResponse>(GET_MANGA_DETAILS_BY_TITLE, { title: 'One Piece' });
-  const mangas = data.Page.media;
-
-  return mangas.map((manga) => ({
-    mangaId: slugify(manga.title.romaji || manga.title.english || manga.title.native || ''),
+  return STATIC_MANGAS.map((manga) => ({
+    mangaId: manga.id,
   }));
 }
 
@@ -36,9 +33,7 @@ export default async function MangaDetailPage({ params }: PageProps) {
     redirect(`/manga/${cleanMangaId}`);
   }
 
-  const title = cleanMangaId.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-  const data = await fetchAnilistData<AnilistResponse>(GET_MANGA_DETAILS_BY_TITLE, { title });
-  const manga = data.Page.media[0];
+  const manga = STATIC_MANGAS.find(m => m.id === cleanMangaId);
 
   if (!manga) {
     return (
