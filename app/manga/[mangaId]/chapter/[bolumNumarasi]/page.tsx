@@ -1,4 +1,5 @@
 import React from 'react';
+import { slugify } from '@/lib/utils';
 
 interface ChapterDetailPageProps {
   params: Promise<{ mangaId: string; bolumNumarasi: string }>;
@@ -7,11 +8,22 @@ interface ChapterDetailPageProps {
 export async function generateStaticParams() {
   // Gerçek bir uygulamada, API'den veya veritabanından dinamik manga ve bölüm ID'lerini alırsınız.
   // Şimdilik, statik olarak oluşturulacak birkaç örnek ID sağlıyoruz.
-  return [
-    { mangaId: '1', bolumNumarasi: '1' },
-    { mangaId: '1', bolumNumarasi: '2' },
-    { mangaId: '2', bolumNumarasi: '1' },
+  const dummyMangaTitles = [
+    "Fitness'çı Kahraman",
+    "Kılıç Ustası",
+    "Sonsuz Büyücü",
+    "Karanlık Lordun Yükselişi"
   ];
+
+  const params = [];
+  for (const title of dummyMangaTitles) {
+    const mangaId = slugify(title);
+    // Her manga için birkaç örnek bölüm
+    for (let i = 1; i <= 3; i++) {
+      params.push({ mangaId: mangaId, bolumNumarasi: `${i}` });
+    }
+  }
+  return params;
 }
 
 export default async function ChapterDetailPage(props: ChapterDetailPageProps) {
