@@ -3,6 +3,16 @@ import Image from 'next/image';
 import Link from 'next/link';
 import CommentSection from '@/components/CommentSection';
 
+export async function generateStaticParams() {
+  // Gerçek bir uygulamada, burada API'den veya veritabanından dinamik manga ID'lerini alırsınız.
+  // Şimdilik, statik olarak oluşturulacak birkaç örnek ID sağlıyoruz.
+  return [
+    { mangaId: '1' },
+    { mangaId: '2' },
+    { mangaId: '3' },
+  ];
+}
+
 export default async function MangaDetailPage({ params }: { params: Promise<{ mangaId: string }> }) {
   const { mangaId } = await params;
 
