@@ -18,7 +18,7 @@ const nextConfig = {
       },
     ],
   },
-  output: 'standalone',
+  output: 'export',
 }
 
 export const metadata = {
