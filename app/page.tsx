@@ -14,18 +14,18 @@ export default async function Home() {
         <div className="container relative z-20 h-full flex items-center">
           <div className="max-w-2xl animate-fade-in">
             <h1 className="text-5xl font-bold mb-6 gradient-text">
-              Discover Your Next Favorite Manga
+              Bir Sonraki Favori Manganızı Keşfedin
             </h1>
             <p className="text-xl text-gray-300 mb-8">
-              Explore thousands of manga titles, from popular series to hidden gems.
-              Start your reading journey today.
+              Popüler serilerden gizli mücevherlere kadar binlerce manga başlığını keşfedin.
+              Okuma yolculuğunuza bugün başlayın.
             </p>
             <div className="flex gap-4">
               <Link href="/browse" className="btn-primary">
-                Start Reading
+                Okumaya Başla
               </Link>
               <Link href="/popular" className="btn-secondary">
-                Popular Titles
+                Popüler Başlıklar
               </Link>
             </div>
           </div>
@@ -49,20 +49,20 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Categories Section */}
+      {/* Kategoriler Bölümü */}
       <section className="py-16 bg-[#1a1b2e]/50">
         <div className="container">
-          <h2 className="text-3xl font-bold gradient-text mb-8">Browse by Category</h2>
+          <h2 className="text-3xl font-bold gradient-text mb-8">Kategoriye Göre Göz At</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { name: 'Action', icon: '⚔️' },
-              { name: 'Romance', icon: '❤️' },
-              { name: 'Fantasy', icon: '✨' },
-              { name: 'Horror', icon: '👻' }
+              { name: 'Aksiyon', icon: '⚔️' },
+              { name: 'Romantik', icon: '❤️' },
+              { name: 'Fantastik', icon: '✨' },
+              { name: 'Korku', icon: '👻' }
             ].map((category) => (
               <Link
                 key={category.name}
-                href={`/category/${category.name.toLowerCase()}`}
+                href={`/category/${category.name.toLowerCase().replace(/ğ/g, 'g').replace(/ı/g, 'i').replace(/ç/g, 'c').replace(/ş/g, 's').replace(/ö/g, 'o').replace(/ü/g, 'u')}`}
                 className="card p-6 text-center hover:bg-[#6c5ce7]/10 transition-colors duration-200"
               >
                 <span className="text-4xl mb-2 block">{category.icon}</span>
@@ -73,22 +73,22 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Newsletter Section */}
+      {/* Haber Bülteni Bölümü */}
       <section className="py-16">
         <div className="container">
           <div className="max-w-2xl mx-auto text-center">
-            <h2 className="text-3xl font-bold gradient-text mb-4">Stay Updated</h2>
+            <h2 className="text-3xl font-bold gradient-text mb-4">Haberdar Kalın</h2>
             <p className="text-gray-400 mb-8">
-              Subscribe to our newsletter to get the latest updates on new manga releases and exclusive content.
+              Yeni manga yayınları ve özel içerikler hakkında en son güncellemeleri almak için bültenimize abone olun.
             </p>
             <form className="flex gap-4 max-w-md mx-auto">
               <input
                 type="email"
-                placeholder="Enter your email"
+                placeholder="E-posta adresinizi girin"
                 className="input-primary flex-1"
               />
               <button type="submit" className="btn-primary whitespace-nowrap">
-                Subscribe
+                Abone Ol
               </button>
             </form>
           </div>
