@@ -18,11 +18,14 @@ export async function generateStaticParams(): Promise<{ mangaId: string; bolumNu
   return params;
 }
 
-export default async function ChapterDetailPage({
-  params,
-}: {
-  params: { mangaId: string; bolumNumarasi: string };
-}) {
+interface PageProps {
+  params: {
+    mangaId: string;
+    bolumNumarasi: string;
+  };
+}
+
+export default async function ChapterDetailPage({ params }: PageProps) {
   const { mangaId, bolumNumarasi } = params;
 
   return (
