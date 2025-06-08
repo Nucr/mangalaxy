@@ -7,7 +7,7 @@ interface MangaDetailPageProps {
   params: { mangaId: string };
 }
 
-export default function MangaDetailPage({ params }: MangaDetailPageProps) {
+export default async function MangaDetailPage({ params }: MangaDetailPageProps) {
   const { mangaId } = params;
 
   // Dummy data for demonstration. In a real application, you would fetch this from an API.
