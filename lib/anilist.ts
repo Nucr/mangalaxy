@@ -18,6 +18,29 @@ interface Manga {
   volumes?: number;
   description?: string;
   averageScore?: number;
+  genres?: string[];
+  status?: string;
+  format?: string;
+  startDate?: {
+    year: number;
+    month: number;
+    day: number;
+  };
+  endDate?: {
+    year: number;
+    month: number;
+    day: number;
+  };
+  staff?: {
+    edges: Array<{
+      role: string;
+      node: {
+        name: {
+          full: string;
+        };
+      };
+    }>;
+  };
 }
 
 interface PageData {
@@ -55,6 +78,16 @@ export interface AnilistResponse {
         month: number
         day: number
       }
+      staff?: {
+        edges: Array<{
+          role: string;
+          node: {
+            name: {
+              full: string;
+            };
+          };
+        }>;
+      };
     }>
   }
 }
@@ -124,6 +157,53 @@ export const GET_TRENDING_MANGAS = `
           year
           month
           day
+        }
+      }
+    }
+  }
+`
+
+export const GET_MANGA_DETAILS_BY_TITLE = `
+  query GetMangaDetailsByTitle($title: String) {
+    Page(page: 1, perPage: 1) {
+      media(type: MANGA, search: $title) {
+        id
+        title {
+          romaji
+          english
+          native
+        }
+        description
+        coverImage {
+          extraLarge
+          large
+          medium
+        }
+        averageScore
+        genres
+        status
+        chapters
+        volumes
+        format
+        startDate {
+          year
+          month
+          day
+        }
+        endDate {
+          year
+          month
+          day
+        }
+        staff(type: PRIMARY, sort: [RELEVANCE]) {
+          edges {
+            role
+            node {
+              name {
+                full
+              }
+            }
+          }
         }
       }
     }
