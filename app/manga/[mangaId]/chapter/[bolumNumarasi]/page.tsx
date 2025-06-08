@@ -3,7 +3,7 @@ import { slugify } from '@/lib/utils';
 import { fetchAnilistData, GET_RECENT_MANGAS, AnilistResponse } from '@/lib/anilist';
 
 interface PageProps {
-  params: Promise<{ mangaId: string; bolumNumarasi: string }>;
+  params: { mangaId: string; bolumNumarasi: string };
   searchParams: { [key: string]: string | string[] | undefined };
 }
 
@@ -24,8 +24,8 @@ export async function generateStaticParams() {
   return params;
 }
 
-export default async function ChapterDetailPage(props: PageProps) {
-  const { mangaId, bolumNumarasi } = await props.params;
+export default async function ChapterDetailPage({ params }: PageProps) {
+  const { mangaId, bolumNumarasi } = params;
 
   return (
     <div className="container mx-auto px-4 py-8">
