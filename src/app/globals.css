@@ -1,6 +1,15 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --background-gradient: linear-gradient(to bottom, #0d0d0d, #1a1a1a);
+  --primary: #e50914;
+  --primary-dark: #8b0000;
+  --secondary: #ffffff;
+  --secondary-muted: #b3b3b3;
+  --accent-blue: #00c3ff;
+  --accent-purple: #9c27b0;
+  --card-bg: #1a1a1a;
+  --card-border: #2e2e2e;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -17,11 +26,17 @@ body {
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  color: var(--secondary);
+  background: var(--background-gradient);
+  font-family: 'Poppins', Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3 {
+  color: var(--primary);
+  font-family: 'Orbitron', sans-serif;
+  letter-spacing: 1px;
 }
 
 * {
@@ -31,8 +46,12 @@ body {
 }
 
 a {
-  color: inherit;
+  color: var(--accent-blue);
+  transition: color 0.3s;
   text-decoration: none;
+}
+a:hover {
+  color: var(--accent-purple);
 }
 
 @media (prefers-color-scheme: dark) {
