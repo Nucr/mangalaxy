@@ -5,20 +5,31 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import axios from "axios";
 
+type Manga = {
+  _id: string;
+  title: string;
+  author: string;
+  categories: string[];
+  chapters: any[];
+  status: string;
+  desc: string;
+  cover?: string;
+};
+
 export default function AdminMangalar() {
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const mangasPerPage = 10;
   const [sortField, setSortField] = useState<string | null>(null);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
-  const [mangalar, setMangalar] = useState<any[]>([]);
+  const [mangalar, setMangalar] = useState<Manga[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const router = useRouter();
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [deleteError, setDeleteError] = useState("");
   const [editModalOpen, setEditModalOpen] = useState(false);
-  const [editManga, setEditManga] = useState<any>(null);
+  const [editManga, setEditManga] = useState<Manga | null>(null);
   const [editLoading, setEditLoading] = useState(false);
   const [editError, setEditError] = useState("");
   const [editSuccess, setEditSuccess] = useState("");
@@ -40,7 +51,7 @@ export default function AdminMangalar() {
       });
   }, []);
 
-  function sortMangas(mangas: any[]) {
+  function sortMangas(mangas: Manga[]) {
     if (!sortField) return mangas;
     return [...mangas].sort((a, b) => {
       let aValue = a[sortField];
@@ -79,7 +90,7 @@ export default function AdminMangalar() {
     setDeletingId(null);
   }
 
-  function openEditModal(manga: any) {
+  function openEditModal(manga: Manga) {
     setEditManga({ ...manga });
     setEditModalOpen(true);
     setEditError("");

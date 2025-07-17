@@ -6,6 +6,16 @@ import AdminSidebar from "../../AdminSidebar";
 import MangaForm from "../MangaForm";
 import { useRef } from "react";
 
+type MangaForm = {
+  title: string;
+  author: string;
+  categories: string[];
+  chapters: any[];
+  status: string;
+  desc: string;
+  cover?: string;
+};
+
 export default function MangaDuzenlePage() {
   const router = useRouter();
   const params = useSearchParams();
@@ -13,7 +23,7 @@ export default function MangaDuzenlePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
-  const [form, setForm] = useState<any|null>(null);
+  const [form, setForm] = useState<MangaForm | null>(null);
   const [bolumAd, setBolumAd] = useState("");
   const [bolumNo, setBolumNo] = useState("");
   const [yayinTarihi, setYayinTarihi] = useState("");
@@ -108,7 +118,7 @@ export default function MangaDuzenlePage() {
       return sortDir === "asc" ? va.localeCompare(vb) : vb.localeCompare(va);
     });
 
-  async function handleSubmit(newForm: any) {
+  async function handleSubmit(newForm: MangaForm) {
     setError("");
     setSuccessMsg("");
     try {

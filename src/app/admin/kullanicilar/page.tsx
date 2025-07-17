@@ -11,8 +11,8 @@ type User = {
   createdAt?: string;
   level?: number;
   xp?: number;
-  favorites?: any[];
-  [key: string]: any;
+  favorites?: string[];
+  role?: string;
 };
 
 export default function AdminKullanicilar() {

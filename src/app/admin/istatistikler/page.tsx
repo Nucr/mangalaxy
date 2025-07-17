@@ -2,6 +2,8 @@
 import AdminSidebar from "../AdminSidebar";
 import { useEffect, useState } from 'react';
 
+type Stats = { users: number; mangas: number; chapters: number };
+
 const statCards = [
   { key: 'users', label: 'Kullanıcı', color: '#00c3ff', icon: (
     <svg width="36" height="36" fill="#00c3ff" viewBox="0 0 24 24"><path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5z"/></svg>
@@ -15,7 +17,7 @@ const statCards = [
 ];
 
 export default function AdminIstatistikler() {
-  const [stats, setStats] = useState<any>(null);
+  const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string|null>(null);
 

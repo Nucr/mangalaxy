@@ -151,13 +151,23 @@ function SurukleBirakYukleme() {
   );
 }
 
+type MangaForm = {
+  title: string;
+  author: string;
+  categories: string[];
+  chapters: any[];
+  status: string;
+  desc: string;
+  cover?: string;
+};
+
 export default function YeniMangaEkle() {
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState<string|null>(null);
   const [errorMsg, setErrorMsg] = useState<string|null>(null);
   const router = useRouter();
 
-  async function handleSubmit(form: any) {
+  async function handleSubmit(form: MangaForm) {
     setLoading(true);
     setSuccessMsg(null);
     setErrorMsg(null);
