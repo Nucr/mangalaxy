@@ -16,7 +16,7 @@
     "bcryptjs": "^3.0.2",
     "form-data": "^4.0.3",
     "mongodb": "^5.9.2",
-    "next": "15.2.7",
+    "next": "15.3.5",
     "next-auth": "^4.24.11",
     "papaparse": "^5.5.3",
     "react": "^19.0.0",
