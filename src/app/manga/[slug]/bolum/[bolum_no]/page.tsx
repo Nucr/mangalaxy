@@ -2,6 +2,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import Image from "next/image";
 
 type CommentType = {
   name: string;
@@ -17,9 +18,23 @@ type CommentType = {
   replies?: CommentType[];
 };
 
+type Chapter = {
+  bolum_no: string;
+  bolum_adi?: string;
+  sayfalar?: string[];
+};
+type Manga = {
+  _id?: string;
+  title: string;
+  cover: string;
+  desc?: string;
+  categories?: string[];
+  chapters: Chapter[];
+};
+
 export default function BolumOkumaPage() {
   const { slug, bolum_no } = useParams();
-  const [manga, setManga] = useState<any>(null);
+  const [manga, setManga] = useState<Manga | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [fullscreen, setFullscreen] = useState(false);
@@ -186,15 +201,15 @@ export default function BolumOkumaPage() {
   if (error) return <div style={{color:'#e63946',textAlign:'center',margin:'2em 0'}}>{error}</div>;
   if (!manga) return null;
 
-  const bolum = Array.isArray(manga.chapters)
-    ? manga.chapters.find((b:any) => String(b.bolum_no) === String(bolum_no) || String(b.no) === String(bolum_no))
+  const bolum = Array.isArray(manga?.chapters)
+    ? manga.chapters.find((b: Chapter) => String(b.bolum_no) === String(bolum_no) || String((b as any).no) === String(bolum_no))
     : null;
   const sayfalar: string[] = bolum?.sayfalar || [];
 
   // Bölüm indexini bul
-  const bolumIndex = manga.chapters ? manga.chapters.findIndex((b:any)=>String(b.bolum_no)===String(bolum_no)||String(b.no)===String(bolum_no)) : -1;
+  const bolumIndex = manga?.chapters ? manga.chapters.findIndex((b: Chapter)=>String(b.bolum_no)===String(bolum_no)||String((b as any).no)===String(bolum_no)) : -1;
   const isFirst = bolumIndex === 0;
-  const isLast = manga.chapters && bolumIndex === manga.chapters.length-1;
+  const isLast = manga?.chapters && bolumIndex === manga.chapters.length-1;
 
   // Buton stillerini güncelle
   const buttonStyle = {
@@ -296,7 +311,7 @@ export default function BolumOkumaPage() {
               maxWidth:220,
             }}
           >
-            {manga.chapters?.map((b:any,i:number)=>(
+            {manga?.chapters?.map((b: Chapter,i:number)=>(
               <option key={i} value={b.bolum_no||b.no} style={{color:'#23232b',background:'#fff'}}>{b.bolum_adi||b.name||b.adi||`Bölüm ${b.bolum_no||b.no}`}</option>
             ))}
           </select>
@@ -345,7 +360,7 @@ export default function BolumOkumaPage() {
       {sayfalar.length > 0 ? (
         <div style={{display:'flex',flexDirection:'column',gap:24,alignItems:'center'}}>
           {sayfalar.map((url, i) => (
-            <img key={i} src={'/uploads/' + url.replace(/^\/|\//, '')} alt={`Sayfa ${i+1}`} style={{width:'100%',maxWidth:800,borderRadius:12,boxShadow:'0 2px 16px #0007'}} loading="lazy" />
+            <Image key={i} src={'/uploads/' + url.replace(/^\/|\//, '')} alt={`Sayfa ${i+1}`} width={800} height={1200} />
           ))}
         </div>
       ) : (

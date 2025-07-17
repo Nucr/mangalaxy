@@ -81,7 +81,24 @@ const galaxyPlusFeatures = [
   { icon: '💬', title: 'Yorum Özellikleri', desc: 'Gelişmiş yorum ve etkileşim imkanları' },
 ];
 
-export async function fetchMangalar(setMangalar: any, setLoading: any, setError: any) {
+// Tip tanımları
+interface Chapter {
+  bolum_no: string;
+  bolum_adi?: string;
+}
+
+interface Manga {
+  _id?: string;
+  title: string;
+  cover: string;
+  chapters: Chapter[];
+}
+
+export async function fetchMangalar(
+  setMangalar: React.Dispatch<React.SetStateAction<Manga[]>>,
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>,
+  setError: React.Dispatch<React.SetStateAction<string>>
+) {
   setLoading(true);
   try {
     const res = await fetch("/api/mangalar");
@@ -98,7 +115,7 @@ export async function fetchMangalar(setMangalar: any, setLoading: any, setError:
 export default function Home() {
   const [page, setPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
-  const [mangalar, setMangalar] = useState<any[]>([]);
+  const [mangalar, setMangalar] = useState<Manga[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const mangasPerPage = 12;
@@ -211,7 +228,7 @@ export default function Home() {
                         </Link>
                         <div className={styles.chapterList}>
                           {Array.isArray(manga.chapters) && manga.chapters.length > 0 ? (
-                            manga.chapters.slice(-3).reverse().map((chapter: any, idx: number) => (
+                            manga.chapters.slice(-3).reverse().map((chapter: Chapter, idx: number) => (
                               <Link href={`/manga/${slug}/bolum/${chapter.bolum_no}`} className={styles.chapterBox} key={idx}>
                                 {chapter.bolum_adi ? chapter.bolum_adi : `Bölüm No: ${chapter.bolum_no}`}
                               </Link>

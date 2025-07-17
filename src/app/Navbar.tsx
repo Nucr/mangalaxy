@@ -3,11 +3,26 @@ import Link from "next/link";
 import styles from "./page.module.css";
 import { useState, useRef, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
+import Image from "next/image";
+
+// User tipi tanımı
+type User = {
+  name?: string;
+  email?: string;
+  about?: string;
+  image?: string;
+  banner?: string;
+  twitter?: string;
+  instagram?: string;
+  facebook?: string;
+  website?: string;
+  role?: string;
+};
 
 export default function Navbar() {
   const [searchQuery, setSearchQuery] = useState("");
   const { data: session, status } = useSession();
-  const [userExtra, setUserExtra] = useState<any>(null);
+  const [userExtra, setUserExtra] = useState<User | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -95,7 +110,7 @@ export default function Navbar() {
               aria-label="Profil Menüsü"
             >
               {userExtra?.image ? (
-                <img src={userExtra.image} alt="Profil" style={{width:32,height:32,borderRadius:'50%',objectFit:'cover',background:'#fff',border:'2px solid #00c3ff'}} />
+                <Image src={userExtra.image ? userExtra.image : '/default-avatar.png'} alt="Profil" width={32} height={32} style={{borderRadius:'50%',objectFit:'cover',background:'#fff',border:'2px solid #00c3ff'}} />
               ) : (
                 <span style={{display:'flex',alignItems:'center',justifyContent:'center',width:32,height:32,borderRadius:'50%',background:'#fff',border:'2px solid #00c3ff'}}>
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -128,7 +143,7 @@ export default function Navbar() {
                 {/* Üst profil özeti */}
                 <div style={{padding:'28px 0 16px 0',display:'flex',flexDirection:'column',alignItems:'center',borderBottom:'1px solid #23232b',background:'#20212b',position:'relative'}}>
                   {userExtra?.image ? (
-                    <img src={userExtra.image} alt="Profil" style={{width:64,height:64,borderRadius:'50%',objectFit:'cover',background:'#fff',border:'3px solid #00c3ff',marginBottom:8}} />
+                    <Image src={userExtra.image ? userExtra.image : '/default-avatar.png'} alt="Profil" width={64} height={64} style={{borderRadius:'50%',objectFit:'cover',background:'#fff',border:'3px solid #00c3ff',marginBottom:8}} />
                   ) : (
                     <span style={{display:'flex',alignItems:'center',justifyContent:'center',width:64,height:64,borderRadius:'50%',background:'#fff',border:'3px solid #00c3ff',marginBottom:8}}>
                       <svg width="36" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

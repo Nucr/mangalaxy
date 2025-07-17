@@ -5,9 +5,26 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 // import { useSession } from "next-auth/react"; // ARTIK KULLANILMIYOR
 
+// User tipi tanımı
+type User = {
+  name?: string;
+  email?: string;
+  about?: string;
+  image?: string;
+  banner?: string;
+  twitter?: string;
+  instagram?: string;
+  facebook?: string;
+  website?: string;
+  role?: string;
+  level?: number;
+  streak?: number;
+  xp?: number;
+};
+
 export default function ProfilePage() {
   // const { data: session } = useSession(); // ARTIK KULLANILMIYOR
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [editOpen, setEditOpen] = useState(false);
   const [form, setForm] = useState({
     name: "",
@@ -209,7 +226,7 @@ export default function ProfilePage() {
         {/* Banner Alanı */}
         <div style={{width:'100%', maxWidth:900, height:200, background:'#181a22', borderRadius:24, marginBottom:0, position:'relative', boxShadow:'0 4px 32px #0008', overflow:'hidden', zIndex:1}}>
           {(bannerPreview || form.banner || user?.banner) ? (
-            <img src={bannerPreview || form.banner || user?.banner} alt="Banner" style={{width:'100%',height:'100%',objectFit:'cover',position:'absolute',left:0,top:0,zIndex:1}} />
+            <Image src={bannerPreview || form.banner || user?.banner || '/default-banner.png'} alt="Banner" fill style={{objectFit:'cover',position:'absolute',left:0,top:0,zIndex:1}} />
           ) : (
             <div style={{position:'absolute', inset:0, zIndex:1, pointerEvents:'none'}}>
               <svg width="100%" height="100%" style={{position:'absolute',top:0,left:0}}>
@@ -224,8 +241,8 @@ export default function ProfilePage() {
         </div>
         {/* Profil Fotoğrafı ve Adı */}
         <div style={{display:'flex',alignItems:'center',gap:24,marginTop:-64,marginBottom:24, position:'relative', zIndex:2}}>
-          <div style={{width:128,height:128,borderRadius:'50%',overflow:'hidden',boxShadow:'0 2px 16px #00c3ff55', background:'#18181b'}}>
-            <img src={preview || user.image || '/default-avatar.png'} alt="Profil" style={{width:'100%',height:'100%',objectFit:'cover'}} />
+          <div style={{width:128,height:128,borderRadius:'50%',overflow:'hidden',boxShadow:'0 2px 16px #00c3ff55', background:'#18181b', position:'relative'}}>
+            <Image src={preview || user.image || '/default-avatar.png'} alt="Profil" fill style={{objectFit:'cover'}} />
           </div>
           <div style={{display:'flex',flexDirection:'column',gap:8}}>
             <div style={{display:'flex',alignItems:'center',gap:12}}>

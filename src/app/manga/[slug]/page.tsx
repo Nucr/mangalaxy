@@ -3,10 +3,26 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import styles from "../../page.module.css";
+import Image from "next/image";
+
+// Tip tanımları
+type Chapter = {
+  bolum_no: string;
+  bolum_adi?: string;
+};
+
+type Manga = {
+  _id?: string;
+  title: string;
+  cover: string;
+  desc?: string;
+  categories?: string[];
+  chapters: Chapter[];
+};
 
 export default function MangaOzetPage() {
   const { slug } = useParams();
-  const [manga, setManga] = useState<any>(null);
+  const [manga, setManga] = useState<Manga | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   // Bölüm arama ve sayfalama için state
@@ -30,7 +46,7 @@ export default function MangaOzetPage() {
 
   // Bölüm filtreleme ve sayfalama
   const filteredChapters = Array.isArray(manga?.chapters)
-    ? manga.chapters.filter((c:any) => (c.bolum_adi || "").toLowerCase().includes(chapterSearch.toLowerCase()) || (c.bolum_no || "").toString().includes(chapterSearch))
+    ? manga.chapters.filter((c: Chapter) => (c.bolum_adi || "").toLowerCase().includes(chapterSearch.toLowerCase()) || (c.bolum_no || "").toString().includes(chapterSearch))
     : [];
   const totalChapterPages = Math.ceil(filteredChapters.length / chaptersPerPage);
   const paginatedChapters = filteredChapters.slice((chapterPage-1)*chaptersPerPage, chapterPage*chaptersPerPage);
@@ -46,7 +62,7 @@ export default function MangaOzetPage() {
           <div style={{background:'#18181b',borderRadius:18,padding:'32px 32px 24px 32px',boxShadow:'0 2px 16px #0007',display:'flex',gap:32,minWidth:700,maxWidth:900,width:'100%'}}>
             {/* Sol: Kapak ve değerlendirme */}
             <div style={{minWidth:220,maxWidth:220,display:'flex',flexDirection:'column',alignItems:'center',gap:18}}>
-              <img src={manga.cover || "/soylu-ailenin-oglu.png"} alt={manga.title} style={{width:200,height:280,objectFit:'cover',borderRadius:14,boxShadow:'0 2px 16px #0007'}} />
+              <Image src={manga.cover || "/soylu-ailenin-oglu.png"} alt={manga.title} width={200} height={280} style={{objectFit:'cover',borderRadius:14,boxShadow:'0 2px 16px #0007'}} />
               {/* Değerlendirme kutusu */}
               <div style={{background:'#23232b',borderRadius:14,padding:'18px 24px',display:'inline-block',boxShadow:'0 2px 8px #0005',minWidth:180,marginTop:8}}>
                 <div style={{color:'#fff',fontWeight:700,fontSize:'1.13rem',marginBottom:8}}>Değerlendirme</div>
@@ -87,7 +103,7 @@ export default function MangaOzetPage() {
           </div>
           {paginatedChapters.length > 0 ? (
             <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:'1.5em',justifyItems:'center'}}>
-              {paginatedChapters.map((chapter:any,idx:number)=>(
+              {paginatedChapters.map((chapter: Chapter,idx:number)=>(
                 <Link href={`/manga/${slug}/bolum/${chapter.bolum_no}`} key={idx} style={{background:'#23232b',color:'#00c3ff',padding:'22px 0',borderRadius:14,fontWeight:700,fontSize:'1.13rem',textDecoration:'none',boxShadow:'0 2px 8px #00c3ff22',transition:'background 0.18s',display:'flex',alignItems:'center',justifyContent:'center',width:'100%',textAlign:'center',minHeight:60}}>
                   {chapter.bolum_adi ? chapter.bolum_adi : `Bölüm No: ${chapter.bolum_no}`}
                 </Link>

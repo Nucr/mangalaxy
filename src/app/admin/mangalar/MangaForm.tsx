@@ -1,11 +1,22 @@
 "use client";
 import React, { useRef, useState } from "react";
 import axios from 'axios';
+import Image from "next/image";
 
 const categories = [
   "Aksiyon", "Macera", "Fantastik", "Komedi", "Romantik", "Dram", "Doğaüstü", "Okul", "Tarihi", "Bilim Kurgu", "Korku", "Gerilim", "Seinen", "Shounen", "Shoujo", "Josei", "Isekai", "Reenkarnasyon", "Manhwa", "Manhua", "Webtoon", "Slice of Life", "Spor", "Yaoi", "Yuri", "Harem", "Ecchi", "Polisiye", "Psikolojik", "Askeri", "Vampir", "Müzik", "Mecha", "One Shot", "Superpower", "Gizem", "Martial Arts", "Shoujo Ai", "Shounen Ai"
 ];
 const statuses = ["Devam Ediyor", "Tamamlandı"];
+
+type MangaFormType = {
+  title: string;
+  author: string;
+  categories: string[];
+  chapters: any[];
+  status: string;
+  desc: string;
+  cover?: string;
+};
 
 export default function MangaForm({
   initial,
@@ -15,14 +26,14 @@ export default function MangaForm({
   successMsg,
   submitText = "Kaydet"
 }: {
-  initial: any,
-  onSubmit: (form: any) => void,
+  initial: MangaFormType,
+  onSubmit: (form: MangaFormType) => void,
   loading?: boolean,
   errorMsg?: string,
   successMsg?: string,
   submitText?: string
 }) {
-  const [form, setForm] = useState<any>(initial);
+  const [form, setForm] = useState<MangaFormType>(initial);
   const [coverUrl, setCoverUrl] = useState<string|null>(initial.cover || null);
   const [coverFile, setCoverFile] = useState<File|null>(null);
   const [coverUploading, setCoverUploading] = useState(false);
@@ -42,26 +53,26 @@ export default function MangaForm({
         });
         if (res.data?.url) {
           setCoverUrl(res.data.url);
-          setForm((f:any)=>({...f,cover: res.data.url}));
+          setForm((f:MangaFormType)=>({...f,cover: res.data.url}));
         } else {
           setCoverUrl(null);
-          setForm((f:any)=>({...f,cover: ''}));
+          setForm((f:MangaFormType)=>({...f,cover: ''}));
           setCoverError('Kapak yüklenemedi.');
         }
       } catch (err: any) {
         setCoverUrl(null);
-        setForm((f:any)=>({...f,cover: ''}));
+        setForm((f:MangaFormType)=>({...f,cover: ''}));
         setCoverError('Kapak yüklenemedi.');
       }
       setCoverUploading(false);
     } else {
       setCoverUrl(null);
-      setForm((f:any)=>({...f,cover: ''}));
+      setForm((f:MangaFormType)=>({...f,cover: ''}));
     }
   }
 
   function handleCategoryChange(cat: string) {
-    setForm((f:any)=>{
+    setForm((f:MangaFormType)=>{
       const cats = Array.isArray(f.categories) ? f.categories : [];
       return cats.includes(cat)
         ? { ...f, categories: cats.filter((c:string)=>c!==cat) }
@@ -77,7 +88,7 @@ export default function MangaForm({
         <div style={{width:120,height:180,background:'#23232b',borderRadius:12,display:'flex',alignItems:'center',justifyContent:'center',color:'#888',fontWeight:600,fontSize:'1.1rem',boxShadow:'0 2px 8px #0003',position:'relative'}}>
           {coverUploading && <div style={{position:'absolute',top:0,left:0,right:0,bottom:0,background:'#0008',color:'#00c3ff',display:'flex',alignItems:'center',justifyContent:'center',borderRadius:12,fontWeight:700,fontSize:'1.1rem',zIndex:2}}>Yükleniyor...</div>}
           {coverUrl ? (
-            <img src={coverUrl} alt="Kapak" style={{width:'100%',height:'100%',objectFit:'cover',borderRadius:12}} />
+            <Image src={coverUrl} alt="Kapak" width={120} height={180} style={{objectFit:'cover',borderRadius:12}} />
           ) : "Kapak Yok"}
         </div>
         {coverError && <div style={{color:'#e63946',marginTop:6,fontWeight:600}}>{coverError}</div>}
@@ -87,11 +98,11 @@ export default function MangaForm({
         <h2 style={{color:'#00c3ff',fontWeight:800,fontSize:'1.35rem',marginBottom:18}}>Manga {submitText === "Kaydet" ? "Ekle" : "Düzenle"}</h2>
         <div style={{marginBottom:16}}>
           <label>Manga Adı *</label>
-          <input value={form.title || ""} onChange={e=>setForm((f:any)=>({...f,title:e.target.value}))} style={{width:'100%',padding:10,borderRadius:8,border:'1px solid #23232b',background:'#23232b',color:'#fff',marginTop:4,fontSize:'1.1rem'}} required />
+          <input value={form.title || ""} onChange={e=>setForm((f:MangaFormType)=>({...f,title:e.target.value}))} style={{width:'100%',padding:10,borderRadius:8,border:'1px solid #23232b',background:'#23232b',color:'#fff',marginTop:4,fontSize:'1.1rem'}} required />
         </div>
         <div style={{marginBottom:16}}>
           <label>Yazar *</label>
-          <input value={form.author || ""} onChange={e=>setForm((f:any)=>({...f,author:e.target.value}))} style={{width:'100%',padding:10,borderRadius:8,border:'1px solid #23232b',background:'#23232b',color:'#fff',marginTop:4,fontSize:'1.1rem'}} required />
+          <input value={form.author || ""} onChange={e=>setForm((f:MangaFormType)=>({...f,author:e.target.value}))} style={{width:'100%',padding:10,borderRadius:8,border:'1px solid #23232b',background:'#23232b',color:'#fff',marginTop:4,fontSize:'1.1rem'}} required />
         </div>
         <div style={{marginBottom:16}}>
           <label>Türler (birden fazla seçilebilir)</label>
@@ -106,17 +117,17 @@ export default function MangaForm({
         </div>
         <div style={{marginBottom:16}}>
           <label>Bölüm Sayısı</label>
-          <input type="number" value={Array.isArray(form.chapters)?form.chapters.length:form.chapters||""} onChange={e=>setForm((f:any)=>({...f,chapters:parseInt(e.target.value)||0}))} style={{width:'100%',padding:10,borderRadius:8,border:'1px solid #23232b',background:'#23232b',color:'#fff',marginTop:4,fontSize:'1.1rem'}} />
+          <input type="number" value={Array.isArray(form.chapters)?form.chapters.length:form.chapters||""} onChange={e=>setForm((f:MangaFormType)=>({...f,chapters:parseInt(e.target.value)||0}))} style={{width:'100%',padding:10,borderRadius:8,border:'1px solid #23232b',background:'#23232b',color:'#fff',marginTop:4,fontSize:'1.1rem'}} />
         </div>
         <div style={{marginBottom:16}}>
           <label>Durum</label>
-          <select value={form.status||statuses[0]} onChange={e=>setForm((f:any)=>({...f,status:e.target.value}))} style={{width:'100%',padding:10,borderRadius:8,border:'1px solid #23232b',background:'#23232b',color:'#fff',marginTop:4,fontSize:'1.1rem'}}>
+          <select value={form.status||statuses[0]} onChange={e=>setForm((f:MangaFormType)=>({...f,status:e.target.value}))} style={{width:'100%',padding:10,borderRadius:8,border:'1px solid #23232b',background:'#23232b',color:'#fff',marginTop:4,fontSize:'1.1rem'}}>
             {statuses.map(s=>(<option key={s} value={s}>{s}</option>))}
           </select>
         </div>
         <div style={{marginBottom:16}}>
           <label>Açıklama</label>
-          <textarea value={form.desc||""} onChange={e=>setForm((f:any)=>({...f,desc:e.target.value}))} style={{width:'100%',padding:10,borderRadius:8,border:'1px solid #23232b',background:'#23232b',color:'#fff',marginTop:4,fontSize:'1.1rem',minHeight:70}} />
+          <textarea value={form.desc||""} onChange={e=>setForm((f:MangaFormType)=>({...f,desc:e.target.value}))} style={{width:'100%',padding:10,borderRadius:8,border:'1px solid #23232b',background:'#23232b',color:'#fff',marginTop:4,fontSize:'1.1rem',minHeight:70}} />
         </div>
         {errorMsg && <div style={{color:'#e63946',margin:'10px 0',fontWeight:600}}>{errorMsg}</div>}
         {successMsg && <div style={{color:'#00c3ff',margin:'10px 0',fontWeight:600}}>{successMsg}</div>}
