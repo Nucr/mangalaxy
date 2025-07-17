@@ -17,19 +17,19 @@ export const config = {
   },
 };
 
-export async function POST(req: NextRequest) {
+export async function POST(req: NextRequest): Promise<Response> {
   try {
     console.log('Bölüm ekleme isteği alındı');
     const contentType = req.headers.get('content-type');
     if (!contentType) throw new Error('Content-Type header eksik!');
-    return await new Promise((resolve, reject) => {
-      const busboy = Busboy({ headers: { 'content-type': contentType } });
-      const bolumData: any = {};
-      const files: string[] = [];
-      const uploadDir = path.join(process.cwd(), "public", "uploads");
+    const busboy = Busboy({ headers: { 'content-type': contentType } });
+    const bolumData: any = {};
+    const files: string[] = [];
+    const uploadDir = path.join(process.cwd(), "public", "uploads");
 
-      if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+    if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 
+    const busboyPromise = new Promise<void>((resolve, reject) => {
       busboy.on("field", (fieldname: any, val: any) => {
         bolumData[fieldname] = val;
         console.log('Field:', fieldname, val);
@@ -46,46 +46,37 @@ export async function POST(req: NextRequest) {
         file.pipe(fs.createWriteStream(saveTo));
       });
 
-      busboy.on("finish", async () => {
-        try {
-          const client = await clientPromise;
-          const db = client.db();
-          const yeniBolum = {
-            bolum_no: bolumData.bolum_no,
-            bolum_adi: bolumData.bolum_adi,
-            yayin_tarihi: bolumData.yayin_tarihi,
-            sayfalar: files,
-            createdAt: new Date().toISOString()
-          };
-          await db.collection("mangalar").updateOne(
-            { _id: new ObjectId(bolumData.manga_id) },
-            { $push: { chapters: yeniBolum } }
-          );
-          resolve(
-            NextResponse.json({
-              message: "Bölüm ve dosyalar başarıyla yüklendi.",
-              bolum: bolumData,
-              dosyalar: files,
-              yeniBolum
-            })
-          );
-        } catch (e: any) {
-          reject(NextResponse.json({ error: "DB ekleme hatası", detail: e.message }, { status: 500 }));
-        }
-      });
-
-      busboy.on("error", (err: any) => {
-        console.error('Busboy error:', err);
-        reject(NextResponse.json({ error: "Yükleme hatası", detail: err.message }, { status: 500 }));
-      });
-
-      // Next.js 13+ için req.body bir ReadableStream'dir, Node stream'e çevirmek gerekir
-      const nodeStream = require('stream').Readable.from(req.body);
-      nodeStream.pipe(busboy);
+      busboy.on("finish", () => resolve());
+      busboy.on("error", (err: any) => reject(err));
     });
-  } catch (err: any) {
-    console.error('API Bölüm ekleme genel hata:', err);
-    return NextResponse.json({ error: "Sunucu hatası", detail: err.message, stack: err.stack }, { status: 500 });
+
+    // Next.js 13+ için req.body bir ReadableStream'dir, Node stream'e çevirmek gerekir
+    const nodeStream = require('stream').Readable.from(req.body);
+    nodeStream.pipe(busboy);
+    await busboyPromise;
+
+    const client = await clientPromise;
+    const db = client.db();
+    const yeniBolum = {
+      bolum_no: bolumData.bolum_no,
+      bolum_adi: bolumData.bolum_adi,
+      yayin_tarihi: bolumData.yayin_tarihi,
+      sayfalar: files,
+      createdAt: new Date().toISOString()
+    };
+    await db.collection("mangalar").updateOne(
+      { _id: new ObjectId(bolumData.manga_id) },
+      { $push: { chapters: yeniBolum } }
+    );
+    return NextResponse.json({
+      message: "Bölüm ve dosyalar başarıyla yüklendi.",
+      bolum: bolumData,
+      dosyalar: files,
+      yeniBolum
+    });
+  } catch (e: any) {
+    console.error('API Bölüm ekleme genel hata:', e);
+    return NextResponse.json({ error: "Sunucu hatası", detail: e.message, stack: e.stack }, { status: 500 });
   }
 }
 
