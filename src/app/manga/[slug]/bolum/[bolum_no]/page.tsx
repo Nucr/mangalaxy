@@ -156,7 +156,7 @@ export default function BolumOkumaPage() {
       }
     }
   }
-  async function handleCommentSubmit(e:any) {
+  async function handleCommentSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!commentText.trim() || !session) return;
     const user = session.user?.email || session.user?.name || "user";
@@ -202,12 +202,12 @@ export default function BolumOkumaPage() {
   if (!manga) return null;
 
   const bolum = Array.isArray(manga?.chapters)
-    ? manga.chapters.find((b: Chapter) => String(b.bolum_no) === String(bolum_no) || String((b as any).no) === String(bolum_no))
+    ? manga.chapters.find((b: Chapter) => String(b.bolum_no) === String(bolum_no) || String((b as Partial<Chapter>).no) === String(bolum_no))
     : null;
   const sayfalar: string[] = bolum?.sayfalar || [];
 
   // Bölüm indexini bul
-  const bolumIndex = manga?.chapters ? manga.chapters.findIndex((b: Chapter)=>String(b.bolum_no)===String(bolum_no)||String((b as any).no)===String(bolum_no)) : -1;
+  const bolumIndex = manga?.chapters ? manga.chapters.findIndex((b: Chapter)=>String(b.bolum_no)===String(bolum_no)||String((b as Partial<Chapter>).no)===String(bolum_no)) : -1;
   const isFirst = bolumIndex === 0;
   const isLast = manga?.chapters && bolumIndex === manga.chapters.length-1;
 
@@ -443,11 +443,11 @@ export default function BolumOkumaPage() {
           ) : (
             comments.map((c,i)=>{
               // Demo: Avatar, rol, streak, like/dislike için örnek veriler
-              const avatar = (c as any).avatar || '/default-avatar.png';
-              const role = (c as any).role || (c.name?.toLowerCase().includes('admin') ? 'admin' : 'uye');
-              const streak = (c as any).streak || (i % 2 === 0 ? 5 : undefined); // demo
-              const likes = (c as any).likes ?? 0;
-              const dislikes = (c as any).dislikes ?? 0;
+              const avatar = (c as {avatar?: string}).avatar || '/default-avatar.png';
+              const role = (c as {role?: string, name?: string}).role || (c.name?.toLowerCase().includes('admin') ? 'admin' : 'uye');
+              const streak = (c as {streak?: number, name?: string}).streak || (i % 2 === 0 ? 5 : undefined); // demo
+              const likes = (c as {likes?: number}).likes ?? 0;
+              const dislikes = (c as {dislikes?: number}).dislikes ?? 0;
               // session ve session.user kontrolü
               const isLoggedIn = !!session && !!session.user;
               const handleLike = async () => {
@@ -478,7 +478,7 @@ export default function BolumOkumaPage() {
                 });
                 reloadComments();
               };
-              const handleReply = async (e: any, commentIndex: number) => {
+              const handleReply = async (e: React.FormEvent<HTMLFormElement>, commentIndex: number) => {
                 e.preventDefault();
                 if (!isLoggedIn || !replyText.trim()) return;
                 await fetch(`/api/mangalar/${slug}/yorumlar`, {

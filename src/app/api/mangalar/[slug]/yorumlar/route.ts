@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import clientPromise from "@/lib/mongodb";
 
-async function getParams(context: any) {
+async function getParams(context: unknown) {
   // Next.js 13+ ile params artık async olarak çekilmeli
-  return await context.params;
+  return await (context as { params: { slug: string } }).params;
 }
 
 export async function GET(req: NextRequest, context: { params: { slug: string } }) {
@@ -27,7 +27,7 @@ export async function GET(req: NextRequest, context: { params: { slug: string } 
     }
 
     const bolum = (manga.chapters || []).find(
-      (b: any) =>
+      (b: Partial<Chapter>) =>
         String(b.bolum_no) === String(bolum_no) ||
         String(b.no) === String(bolum_no)
     );
@@ -38,13 +38,13 @@ export async function GET(req: NextRequest, context: { params: { slug: string } 
 
     let selectedEmoji = null;
     if (user && bolum.emojiLikes) {
-      const found = bolum.emojiLikes.find((l: any) => l.user === user);
+      const found = bolum.emojiLikes.find((l: {user: string}) => l.user === user);
       if (found) selectedEmoji = found.emoji;
     }
 
     // Yorumlara kullanıcı bilgilerini ekle
     const commentsWithUser = await Promise.all(
-      (bolum.comments || []).map(async (comment: any) => {
+      (bolum.comments || []).map(async (comment: Partial<Comment>) => {
         const userDoc = await db.collection("users").findOne({ email: comment.user });
         return {
           ...comment,
@@ -60,8 +60,8 @@ export async function GET(req: NextRequest, context: { params: { slug: string } 
       emojiCounts: bolum.emojiCounts || { '👍': 0, '😂': 0, '😍': 0, '😮': 0, '😢': 0, '👎': 0 },
       selectedEmoji,
     });
-  } catch (e: any) {
-    return NextResponse.json({ error: e.message }, { status: 500 });
+  } catch (e: unknown) {
+    return NextResponse.json({ error: (e as Error).message }, { status: 500 });
   }
 }
 
@@ -90,7 +90,7 @@ export async function POST(req: NextRequest, context: { params: { slug: string }
     const role = userDoc?.role || 'uye';
     const streak = userDoc?.streak || 0;
 
-    const chapters = manga.chapters.map((b: any) => {
+    const chapters = manga.chapters.map((b: Partial<Chapter>) => {
       if (String(b.bolum_no) === String(bolum_no) || String(b.no) === String(bolum_no)) {
         const comments = b.comments || [];
         comments.unshift({ name, text, emoji, user, date: new Date().toISOString() });
@@ -102,8 +102,8 @@ export async function POST(req: NextRequest, context: { params: { slug: string }
     await db.collection("mangalar").updateOne({ slug: new RegExp(`^${slug}$`, 'i') }, { $set: { chapters } });
 
     return NextResponse.json({ success: true });
-  } catch (e: any) {
-    return NextResponse.json({ error: e.message }, { status: 500 });
+  } catch (e: unknown) {
+    return NextResponse.json({ error: (e as Error).message }, { status: 500 });
   }
 }
 
@@ -126,7 +126,7 @@ export async function PATCH(req: NextRequest, context: { params: { slug: string 
       return NextResponse.json({ error: "Manga bulunamadı" }, { status: 404 });
     }
 
-    const chapters = await Promise.all(manga.chapters.map(async (b: any) => {
+    const chapters = await Promise.all(manga.chapters.map(async (b: Partial<Chapter>) => {
       if (String(b.bolum_no) === String(bolum_no) || String(b.no) === String(bolum_no)) {
         let comments = b.comments || [];
         // Yorum silme
@@ -176,7 +176,7 @@ export async function PATCH(req: NextRequest, context: { params: { slug: string 
         // Emoji işlemleri (eski kod)
         if (emoji) {
           let emojiLikes = b.emojiLikes || [];
-          const prev = emojiLikes.find((l: any) => l.user === user);
+          const prev = emojiLikes.find((l: {user: string}) => l.user === user);
           if (!b.emojiCounts) {
             b.emojiCounts = { '👍': 0, '😂': 0, '😍': 0, '😮': 0, '😢': 0, '👎': 0 };
           }
@@ -202,7 +202,7 @@ export async function PATCH(req: NextRequest, context: { params: { slug: string 
     if (!updatedManga) return NextResponse.json({ error: "Manga bulunamadı" }, { status: 404 });
 
     const updatedBolum = (updatedManga.chapters || []).find(
-      (b: any) =>
+      (b: Partial<Chapter>) =>
         String(b.bolum_no) === String(bolum_no) ||
         String(b.no) === String(bolum_no)
     );
@@ -213,13 +213,13 @@ export async function PATCH(req: NextRequest, context: { params: { slug: string 
 
     let selectedEmoji = null;
     if (user && updatedBolum.emojiLikes) {
-      const found = updatedBolum.emojiLikes.find((l: any) => l.user === user);
+      const found = updatedBolum.emojiLikes.find((l: {user: string}) => l.user === user);
       if (found) selectedEmoji = found.emoji;
     }
 
     // Yorumlara kullanıcı bilgilerini ekle
     const commentsWithUser = await Promise.all(
-      (updatedBolum.comments || []).map(async (comment: any) => {
+      (updatedBolum.comments || []).map(async (comment: Partial<Comment>) => {
         const userDoc = await db.collection("users").findOne({ email: comment.user });
         return {
           ...comment,
@@ -236,7 +236,7 @@ export async function PATCH(req: NextRequest, context: { params: { slug: string 
       selectedEmoji,
       comments: commentsWithUser,
     });
-  } catch (e: any) {
-    return NextResponse.json({ error: e.message }, { status: 500 });
+  } catch (e: unknown) {
+    return NextResponse.json({ error: (e as Error).message }, { status: 500 });
   }
 }

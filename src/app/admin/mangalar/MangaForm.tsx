@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import axios from 'axios';
 import Image from "next/image";
 
@@ -8,11 +8,17 @@ const categories = [
 ];
 const statuses = ["Devam Ediyor", "Tamamlandı"];
 
+interface Chapter {
+  bolum_no: string;
+  bolum_adi?: string;
+  // Diğer alanlar gerekiyorsa ekle
+}
+
 type MangaFormType = {
   title: string;
   author: string;
   categories: string[];
-  chapters: any[];
+  chapters: Chapter[];
   status: string;
   desc: string;
   cover?: string;
@@ -59,7 +65,7 @@ export default function MangaForm({
           setForm((f:MangaFormType)=>({...f,cover: ''}));
           setCoverError('Kapak yüklenemedi.');
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         setCoverUrl(null);
         setForm((f:MangaFormType)=>({...f,cover: ''}));
         setCoverError('Kapak yüklenemedi.');

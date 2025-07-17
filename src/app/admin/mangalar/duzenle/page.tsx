@@ -6,11 +6,17 @@ import AdminSidebar from "../../AdminSidebar";
 import MangaForm from "../MangaForm";
 import { useRef } from "react";
 
+interface Chapter {
+  bolum_no: string;
+  bolum_adi?: string;
+  // Diğer alanlar gerekiyorsa ekle
+}
+
 type MangaForm = {
   title: string;
   author: string;
   categories: string[];
-  chapters: any[];
+  chapters: Chapter[];
   status: string;
   desc: string;
   cover?: string;
@@ -69,7 +75,7 @@ export default function MangaDuzenlePage() {
   useEffect(() => {
     if (form && form.chapters && form.chapters.length > 0) {
       // En büyük bölüm no'yu bul
-      const maxNo = Math.max(...form.chapters.map((b:any) => parseInt(b.bolum_no || b.no || "0")).filter(Boolean));
+      const maxNo = Math.max(...form.chapters.map((b: Chapter) => parseInt(b.bolum_no || (b as any).no || "0")).filter(Boolean));
       setBolumNo((maxNo + 1).toString());
       setBolumAd(`Bölüm ${maxNo + 1}`);
     } else {
@@ -98,24 +104,24 @@ export default function MangaDuzenlePage() {
 
   // Filtrelenmiş ve sıralanmış bölümler
   const filteredChapters = form?.chapters
-    ?.filter((b:any) => {
-      const val = filterField === "bolum_no" ? (b.bolum_no || b.no || "") :
-                  filterField === "bolum_adi" ? (b.bolum_adi || b.name || b.adi || "") :
+    ?.filter((b: Chapter) => {
+      const val = filterField === "bolum_no" ? (b.bolum_no || (b as any).no || "") :
+                  filterField === "bolum_adi" ? (b.bolum_adi || (b as any).name || (b as any).adi || "") :
                   filterField === "yayin_tarihi" ? (b.yayin_tarihi || "") :
                   b._id || "";
       return val.toString().toLowerCase().includes(filterText.toLowerCase());
     })
-    ?.sort((a:any, b:any) => {
-      let va = sortField === "bolum_no" ? parseInt(a.bolum_no || a.no || "0") :
-               sortField === "bolum_adi" ? (a.bolum_adi || a.name || a.adi || "") :
+    ?.sort((a: Chapter, b: Chapter) => {
+      let va = sortField === "bolum_no" ? parseInt(a.bolum_no || (a as any).no || "0") :
+               sortField === "bolum_adi" ? ((a as any).bolum_adi || (a as any).name || (a as any).adi || "") :
                sortField === "yayin_tarihi" ? (a.yayin_tarihi || "") :
-               a._id || "";
-      let vb = sortField === "bolum_no" ? parseInt(b.bolum_no || b.no || "0") :
-               sortField === "bolum_adi" ? (b.bolum_adi || b.name || b.adi || "") :
+               (a as any)._id || "";
+      let vb = sortField === "bolum_no" ? parseInt(b.bolum_no || (b as any).no || "0") :
+               sortField === "bolum_adi" ? ((b as any).bolum_adi || (b as any).name || (b as any).adi || "") :
                sortField === "yayin_tarihi" ? (b.yayin_tarihi || "") :
-               b._id || "";
+               (b as any)._id || "";
       if (typeof va === "number" && typeof vb === "number") return sortDir === "asc" ? va - vb : vb - va;
-      return sortDir === "asc" ? va.localeCompare(vb) : vb.localeCompare(va);
+      return sortDir === "asc" ? String(va).localeCompare(String(vb)) : String(vb).localeCompare(String(va));
     });
 
   async function handleSubmit(newForm: MangaForm) {
@@ -136,12 +142,12 @@ export default function MangaDuzenlePage() {
       if (!res.data.success) throw new Error(res.data.error || "Güncellenemedi");
       setSuccessMsg("Başarıyla güncellendi!");
       setTimeout(()=>setSuccessMsg(""), 2000);
-    } catch (err: any) {
-      setError("Güncelleme hatası: " + (err.response?.data?.error || err.message));
+    } catch (err: unknown) {
+      setError("Güncelleme hatası: " + ((err as any).response?.data?.error || (err as any).message));
     }
   }
 
-  async function handleBolumEkle(e: any) {
+  async function handleBolumEkle(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setBolumMsg("");
     setBolumLoading(true);
@@ -160,8 +166,8 @@ export default function MangaDuzenlePage() {
       setBolumMsg("✔️ Bölüm başarıyla eklendi!");
       setBolumAd(""); setBolumNo(""); setYayinTarihi(""); setBolumDosyalar(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
-    } catch (err: any) {
-      setBolumMsg("❌ " + (err.response?.data?.error || err.message));
+    } catch (err: unknown) {
+      setBolumMsg("❌ " + ((err as any).response?.data?.error || (err as any).message));
     }
     setBolumLoading(false);
   }
@@ -190,8 +196,8 @@ export default function MangaDuzenlePage() {
       } else {
         alert(res.data.error || 'Silinemedi');
       }
-    } catch (err: any) {
-      alert('Silme hatası: ' + (err.response?.data?.error || err.message));
+    } catch (err: unknown) {
+      alert('Silme hatası: ' + ((err as any).response?.data?.error || (err as any).message));
     }
     setDeletingBolum(null);
   }
@@ -369,21 +375,21 @@ export default function MangaDuzenlePage() {
                   <span></span>
                 </div>
                 {filteredChapters && filteredChapters.length > 0 ? (
-                  [...filteredChapters].sort((a:any, b:any) => {
+                  [...filteredChapters].sort((a: Chapter, b: Chapter) => {
                     let va, vb;
                     if (sortField === 'bolum_no') {
-                      va = parseInt(a.bolum_no || a.no || "0");
-                      vb = parseInt(b.bolum_no || b.no || "0");
+                      va = parseInt(a.bolum_no || (a as any).no || "0");
+                      vb = parseInt(b.bolum_no || (b as any).no || "0");
                     } else if (sortField === 'bolum_adi') {
-                      va = (a.bolum_adi || a.name || a.adi || '').toLowerCase();
-                      vb = (b.bolum_adi || b.name || b.adi || '').toLowerCase();
+                      va = (a.bolum_adi || (a as any).name || (a as any).adi || '').toLowerCase();
+                      vb = (b.bolum_adi || (b as any).name || (b as any).adi || '').toLowerCase();
                     } else if (sortField === 'yayin_tarihi') {
                       va = a.yayin_tarihi || '';
                       vb = b.yayin_tarihi || '';
                     }
                     if (typeof va === 'number' && typeof vb === 'number') return sortDir === 'asc' ? va - vb : vb - va;
                     return sortDir === 'asc' ? String(va).localeCompare(String(vb)) : String(vb).localeCompare(String(va));
-                  }).map((bolum:any, idx:number) => (
+                  }).map((bolum: Chapter, idx:number) => (
                     <div key={`${bolum.bolum_no || bolum.no}-${idx}`}
                       style={{
                         display: 'grid',
@@ -405,7 +411,7 @@ export default function MangaDuzenlePage() {
                       onMouseLeave={e => e.currentTarget.style.background = activeBolumNo === (bolum.no || bolum.bolum_no) ? '#00c3ff22' : 'transparent'}
                     >
                       <span style={{fontWeight:600}}>{bolum.no || bolum.bolum_no}</span>
-                      <span>{bolum.bolum_adi || bolum.name || bolum.adi || ''}</span>
+                      <span>{bolum.bolum_adi || (bolum as any).name || (bolum as any).adi || ''}</span>
                       <span>{bolum.yayin_tarihi ? new Date(bolum.yayin_tarihi).toLocaleDateString('tr-TR') : '-'}</span>
                       <button
                         onClick={e => {e.stopPropagation(); handleBolumSil(bolum.no || bolum.bolum_no);}}
@@ -441,7 +447,7 @@ export default function MangaDuzenlePage() {
 }
 
 // Dosya ağacını gezmek için yardımcı fonksiyon (en üste eklenmeli veya import edilmeli)
-function traverseFileTree(item: any, fileList: any[], path = "") {
+function traverseFileTree(item: FileSystemEntry, fileList: File[], path = "") {
   return new Promise(resolve => {
     if (item.isFile) {
       item.file(file => {

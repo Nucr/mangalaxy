@@ -16,6 +16,12 @@ type Manga = {
   cover?: string;
 };
 
+interface Chapter {
+  bolum_no: string;
+  bolum_adi?: string;
+  // Diğer alanlar gerekiyorsa ekle
+}
+
 export default function AdminMangalar() {
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -84,8 +90,8 @@ export default function AdminMangalar() {
       const res = await axios.delete(`/api/mangalar?id=${id}`);
       if (!res.data.success) throw new Error(res.data.error || "Silinemedi");
       setMangalar(prev => prev.filter(m => m._id !== id));
-    } catch (err: any) {
-      setDeleteError("Silme hatası: " + (err.response?.data?.error || err.message));
+    } catch (err: unknown) {
+      setDeleteError("Silme hatası: " + ((err as any).response?.data?.error || (err as any).message));
     }
     setDeletingId(null);
   }
@@ -121,8 +127,8 @@ export default function AdminMangalar() {
       setMangalar(prev => prev.map(m => m._id === editManga._id ? { ...m, ...editManga } : m));
       setEditSuccess("Başarıyla güncellendi!");
       setTimeout(() => { closeEditModal(); }, 1200);
-    } catch (err: any) {
-      setEditError("Güncelleme hatası: " + (err.response?.data?.error || err.message));
+    } catch (err: unknown) {
+      setEditError("Güncelleme hatası: " + ((err as any).response?.data?.error || (err as any).message));
     }
     setEditLoading(false);
   }

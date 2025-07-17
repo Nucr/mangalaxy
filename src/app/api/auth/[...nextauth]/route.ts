@@ -56,14 +56,14 @@ export const authOptions = {
     error: "/giris"
   },
   callbacks: {
-    async jwt({ token, user, account, profile }: any) {
+    async jwt({ token, user, account, profile }: { token: any; user?: any; account?: any; profile?: any }) {
       // İlk girişte user varsa token'a name ekle
       if (user) {
         token.name = user.name;
       }
       return token;
     },
-    async session({ session, token, user }: any) {
+    async session({ session, token, user }: { session: any; token: any; user?: any }) {
       // token'daki name'i session.user.name olarak ata
       if (token?.name) {
         session.user.name = token.name;

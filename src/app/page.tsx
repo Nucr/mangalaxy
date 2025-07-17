@@ -140,7 +140,7 @@ export default function Home() {
   return (
     <div className={styles.page}>
       <main className={styles.main}>
-        <h1 className={styles.title}>Mangalaxy'ye Hoşgeldiniz!</h1>
+        <h1 className={styles.title}>Mangalaxy&apos;ye Hoşgeldiniz!</h1>
         <p className={styles.description}>
           En popüler mangaları keşfet, oku ve favorilerini listele. <br />
           Manga evrenine adım atmak için doğru yerdesin!
@@ -169,7 +169,7 @@ export default function Home() {
               return (
                 <div className={styles.lastReadItem} key={i}>
                   <Link href={`/manga/${slug}`}>
-                    <img src={item.cover} alt={item.title} className={styles.lastReadCover} width={48} height={68} />
+                    <Image src={item.cover} alt={item.title} className={styles.lastReadCover} width={48} height={68} />
                   </Link>
                   <Link href={`/manga/${slug}`} className={styles.lastReadManga}>{item.title}</Link>
                   <Link href={`/manga/${slug}/bolum/${bolumNo}`} className={styles.lastReadChapter}>{item.lastChapter}</Link>

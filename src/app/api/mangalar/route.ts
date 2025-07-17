@@ -36,8 +36,8 @@ export async function POST(req: NextRequest) {
     };
     const result = await db.collection("mangalar").insertOne(newManga);
     return NextResponse.json({ success: true, manga: { ...newManga, _id: result.insertedId } });
-  } catch (err: any) {
-    return NextResponse.json({ success: false, error: err.message || "Sunucu hatası" }, { status: 500 });
+  } catch (err: unknown) {
+    return NextResponse.json({ success: false, error: (err as Error).message || "Sunucu hatası" }, { status: 500 });
   }
 }
 
@@ -55,8 +55,8 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ success: false, error: "Manga bulunamadı." }, { status: 404 });
     }
     return NextResponse.json({ success: true });
-  } catch (err: any) {
-    return NextResponse.json({ success: false, error: err.message || "Sunucu hatası" }, { status: 500 });
+  } catch (err: unknown) {
+    return NextResponse.json({ success: false, error: (err as Error).message || "Sunucu hatası" }, { status: 500 });
   }
 }
 
@@ -70,7 +70,7 @@ export async function PATCH(req: NextRequest) {
     const body = await req.json();
     const client = await clientPromise;
     const db = client.db();
-    const updateFields: any = {};
+    const updateFields: Record<string, unknown> = {};
     ["title", "author", "categories", "chapters", "status", "desc", "cover"].forEach(key => {
       if (body[key] !== undefined) updateFields[key] = body[key];
     });
@@ -82,7 +82,7 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ success: false, error: "Manga bulunamadı." }, { status: 404 });
     }
     return NextResponse.json({ success: true });
-  } catch (err: any) {
-    return NextResponse.json({ success: false, error: err.message || "Sunucu hatası" }, { status: 500 });
+  } catch (err: unknown) {
+    return NextResponse.json({ success: false, error: (err as Error).message || "Sunucu hatası" }, { status: 500 });
   }
 } 

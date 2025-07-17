@@ -19,8 +19,8 @@ export async function POST(req: Request) {
     await writeFile(filePath, buffer);
     const url = `/uploads/kapaklar/${fileName}`;
     return NextResponse.json({ url });
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.error('Kapak yükleme hatası:', e);
-    return NextResponse.json({ error: 'Yükleme başarısız', detail: e?.message }, { status: 500 });
+    return NextResponse.json({ error: 'Yükleme başarısız', detail: (e as Error)?.message }, { status: 500 });
   }
 } 

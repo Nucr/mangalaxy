@@ -17,8 +17,8 @@ export async function POST(req: Request) {
       { upsert: true }
     );
     return NextResponse.json({ success: true });
-  } catch (e: any) {
-    return NextResponse.json({ error: 'Okuma kaydı eklenemedi', detail: e?.message }, { status: 500 });
+  } catch (e: unknown) {
+    return NextResponse.json({ error: 'Okuma kaydı eklenemedi', detail: (e as Error)?.message }, { status: 500 });
   }
 }
 
@@ -38,7 +38,7 @@ export async function GET(req: Request) {
       .project({ _id: 0, mangaId: 1, chapterNo: 1, date: 1, mangaTitle: 1, mangaCover: 1 })
       .toArray();
     return NextResponse.json({ reads });
-  } catch (e: any) {
-    return NextResponse.json({ error: 'Okuma geçmişi alınamadı', detail: e?.message }, { status: 500 });
+  } catch (e: unknown) {
+    return NextResponse.json({ error: 'Okuma geçmişi alınamadı', detail: (e as Error)?.message }, { status: 500 });
   }
 } 
